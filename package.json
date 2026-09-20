@@ -12,7 +12,8 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "check:encoding": "node scripts/check-encoding.mjs"
+    "check:encoding": "node scripts/check-encoding.mjs",
+    "content:check": "node scripts/content-check.mjs"
   },
   "dependencies": {
     "@fontsource/hanken-grotesk": "^5.3.0",
