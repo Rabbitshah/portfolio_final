@@ -315,6 +315,7 @@ Build in this order; each item is its own commit and is reduced-motion and point
 8. `CursorRing`, `Magnetic`, `Spotlight`
 9. `DoodleLayer`
 10. Optional: page transitions (Framer Motion) if they do not hurt INP
+- Desk sticker text: use 'say hi', not 'open to work'.
 - **Accept:** each behavior matches the template; keyboard-only run-through works; reduced-motion run-through shows a complete static page; first-load JS within budget; no console errors.
 - **Prompt:** *"Do Phase 3, item N only. Port the behavior from the template's JS into a typed client component. State the pointer-capability and reduced-motion behavior in your plan."*
 

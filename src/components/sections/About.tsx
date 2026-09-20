@@ -133,7 +133,6 @@ export function About() {
                 "Timezone",
                 `${site.location.timezoneLabel} (${site.location.utcOffset})`,
               ],
-              ["Looking for", site.availability.lookingFor],
             ]}
           />
         </Card>

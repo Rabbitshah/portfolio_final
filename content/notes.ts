@@ -18,7 +18,6 @@ export const note: Note = {
     "i build the whole product: the api, the background jobs, the ui, and the docker setup.",
     "the problems i've liked most sit where a normal web app meets ai: document pipelines, chat, and evolutionary algorithms.",
     "i'm early in my career. {roles} roles, {projects} projects and {papers} papers so far, all listed on this page.",
-    // TODO(content): decide availability wording now that I am employed
-    "i'm looking for a full-stack or ai-product role, remote preferred. say hi below.",
+    "say hi below.",
   ],
 };
