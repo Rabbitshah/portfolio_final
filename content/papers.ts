@@ -31,7 +31,7 @@ export const papers: Paper[] = [
     // TODO(content): confirm 97% and the 8 h vs 48 h training times against the paper's own results.
     metrics: [
       { label: "Track completion", value: "97%" },
-      { label: "Faster training than deep RL", value: "6× (8 h vs 48 h)" },
+      { label: "Faster training than deep RL (8 h vs 48 h)", value: "6×" },
     ],
     // TODO(content): add the IEEE Xplore URL or DOI. Do not guess it.
     doi: undefined,

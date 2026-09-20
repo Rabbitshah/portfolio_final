@@ -11,7 +11,7 @@ export interface Highlight {
 export const derivedHighlightLabels = {
   papers: "papers, IEEE and IJCRT",
   roles: "roles and internships",
-  projects: "projects shipped",
+  projects: "projects",
 };
 
 export const otherHighlights: Highlight[] = [
