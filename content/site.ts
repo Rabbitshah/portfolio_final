@@ -28,12 +28,13 @@ export interface Site {
     city: string;
     region: string;
     country: string;
-    timezone: string;
+    timezone: string; // IANA name, for code only. Never show it to visitors.
+    timezoneLabel: string; // what visitors see, e.g. "IST"
     utcOffset: string;
   };
   contact: { email: string };
   links: { github: string; linkedin: string; resume?: string };
-  availability: { open: boolean; label: string };
+  availability: { open: boolean; label: string; lookingFor: string };
   nav: NavItem[];
   menu: NavItem[];
   nowPlaying: string[];
@@ -50,7 +51,6 @@ export const site: Site = {
 
   about: [
     "I finished my B.Tech in Computer Science at Parul University in 2026. I like owning a feature from the API and background jobs to the UI and the Docker setup. Most of my work sits where a normal web app meets AI: document pipelines, LLM chat, and evolutionary algorithms.",
-    "Most recently I co-built a Quality Management System MVP for automated robotic platforms at NexGen Pharma Solutions. It is in pilot.",
   ],
 
   // Optional. Copy Icon.jpeg from the old site's public/assets if you want an avatar.
@@ -61,6 +61,7 @@ export const site: Site = {
     region: "Gujarat",
     country: "India",
     timezone: "Asia/Kolkata",
+    timezoneLabel: "IST",
     utcOffset: "UTC+5:30",
   },
 
@@ -76,7 +77,14 @@ export const site: Site = {
   },
 
   // TODO(content): confirm the wording, and whether you are open to relocation or only remote.
-  availability: { open: true, label: "Open to remote roles" },
+  // TODO(content): decide availability wording now that I am employed
+  availability: {
+    open: true,
+    label: "Open to remote roles",
+    // TODO(content): confirm this wording (copied from the template's "Looking for" row).
+    // TODO(content): decide availability wording now that I am employed
+    lookingFor: "Full-stack and AI-product roles, remote preferred",
+  },
 
   // Bar navigation (inline at 760px and up).
   nav: [

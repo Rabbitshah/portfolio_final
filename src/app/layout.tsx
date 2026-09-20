@@ -4,6 +4,7 @@ import {
   Instrument_Serif,
   JetBrains_Mono,
 } from "next/font/google";
+import { Footer } from "@/components/sections/Footer";
 import { StatusBar } from "@/components/sections/StatusBar";
 import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
@@ -30,6 +31,8 @@ const mono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "Maanav Shah",
+  // TEMP: remove at launch (PLAN Phase 7)
+  robots: { index: false, follow: false },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -46,6 +49,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body>
         <StatusBar />
         {children}
+        <Footer />
       </body>
     </html>
   );

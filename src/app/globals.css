@@ -3,7 +3,7 @@
 /* ---------- TOKENS (Understory, PLAN §9) ----------
    Light is the default. Dark applies from the system preference unless the
    user saved "light", or from an explicit data-theme="dark". Both selectors
-   work on any element, so a subtree can force a theme (see /dev/kit). */
+   work on any element, so a subtree can force a theme. */
 :root,
 [data-theme="light"] {
   --bg: #f1eee3;
@@ -158,6 +158,177 @@
   .theme-moon {
     display: var(--icon-moon);
   }
+
+  /* Marquee: two identical lists; the second is aria-hidden. Pure CSS. */
+  .marquee {
+    display: flex;
+    overflow: hidden;
+    user-select: none;
+  }
+  .marquee > ul {
+    display: flex;
+    flex-shrink: 0;
+    min-width: 100%;
+    justify-content: space-around;
+    animation: marquee-slide 32s linear infinite;
+  }
+  .marquee:hover > ul {
+    animation-play-state: paused;
+  }
+
+  /* FAQ plus/minus indicator. The open state comes from the native <details>. */
+  .pm {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+  .pm::before,
+  .pm::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 14px;
+    height: 1.5px;
+    background: currentColor;
+    transition: transform 0.35s var(--ease-soft);
+  }
+  .pm::before {
+    transform: translate(-50%, -50%);
+  }
+  .pm::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+  details[open] > summary .pm::after {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  /* Hero stage: a static CSS cube. No rotation, no pointer or scroll behavior. */
+  .stage {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    max-width: 27.5rem;
+    aspect-ratio: 1 / 1;
+    margin-inline: auto;
+    perspective: 1000px;
+  }
+  .stage::before {
+    content: "";
+    position: absolute;
+    inset: 8%;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--accent) 0, transparent 62%);
+    opacity: 0.14;
+    filter: blur(30px);
+  }
+  .cube {
+    --s: clamp(140px, 22vw, 13.125rem);
+    position: relative;
+    width: var(--s);
+    height: var(--s);
+    transform-style: preserve-3d;
+    transform: rotateX(-20deg) rotateY(35deg);
+  }
+  .face {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--line-strong);
+    background: color-mix(in srgb, var(--card) 55%, transparent);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink);
+    backdrop-filter: blur(2px);
+  }
+  .face::after {
+    content: "";
+    position: absolute;
+    inset: 10px;
+    border: 1px dashed var(--line);
+    border-radius: 4px;
+  }
+  .f1 {
+    transform: translateZ(calc(var(--s) / 2));
+  }
+  .f2 {
+    transform: rotateY(180deg) translateZ(calc(var(--s) / 2));
+  }
+  .f3 {
+    transform: rotateY(90deg) translateZ(calc(var(--s) / 2));
+  }
+  .f4 {
+    transform: rotateY(-90deg) translateZ(calc(var(--s) / 2));
+  }
+  .f5 {
+    transform: rotateX(90deg) translateZ(calc(var(--s) / 2));
+  }
+  .f6 {
+    transform: rotateX(-90deg) translateZ(calc(var(--s) / 2));
+  }
+  .core {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: calc(var(--s) * 0.34);
+    height: calc(var(--s) * 0.34);
+    margin: calc(var(--s) * -0.17) 0 0 calc(var(--s) * -0.17);
+    transform-style: preserve-3d;
+  }
+  .core i {
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    opacity: 0.9;
+  }
+  .core i:nth-child(1) {
+    transform: translateZ(calc(var(--s) * 0.17));
+  }
+  .core i:nth-child(2) {
+    transform: rotateY(180deg) translateZ(calc(var(--s) * 0.17));
+  }
+  .core i:nth-child(3) {
+    transform: rotateY(90deg) translateZ(calc(var(--s) * 0.17));
+  }
+  .core i:nth-child(4) {
+    transform: rotateY(-90deg) translateZ(calc(var(--s) * 0.17));
+  }
+  .core i:nth-child(5) {
+    transform: rotateX(90deg) translateZ(calc(var(--s) * 0.17));
+  }
+  .core i:nth-child(6) {
+    transform: rotateX(-90deg) translateZ(calc(var(--s) * 0.17));
+  }
+}
+
+@media (max-width: 979px) {
+  .stage {
+    max-width: 300px;
+  }
+  .cube {
+    --s: clamp(110px, 17vw, 170px);
+  }
+}
+@media (max-width: 699px) {
+  .stage {
+    max-width: 250px;
+  }
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .stage {
+    max-width: 210px;
+  }
+}
+
+@keyframes marquee-slide {
+  to {
+    transform: translateX(-100%);
+  }
 }
 
 @keyframes avail-pulse {
@@ -180,5 +351,16 @@
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
+  }
+  /* The marquee becomes a static, wrapped list and the duplicate is hidden. */
+  .marquee {
+    overflow: visible;
+  }
+  .marquee > ul {
+    flex-wrap: wrap;
+    animation: none;
+  }
+  .marquee > ul[aria-hidden="true"] {
+    display: none;
   }
 }

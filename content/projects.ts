@@ -74,6 +74,7 @@ export const projects: Project[] = [
     subtitle: "AI healthcare & compliance web ecosystem",
     window: "praversetech.com",
     // TODO(content): period, your role, and how this relates to NexGen. It is not on your resume. Add it there too.
+    // TODO(content): get written approval from Praverse before launch; describe only what is publicly visible on praversetech.com; never add a code link.
     status: "shipped",
     visible: true,
     order: 2,

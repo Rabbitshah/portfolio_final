@@ -1,16 +1,30 @@
 import type { ReactNode } from "react";
 import { cx } from "@/lib/cx";
 
-// Static in Phase 1a. Drag, tilt and working traffic lights arrive in Phase 3.
+// How tall the screen area is: a fixed height for mock visuals, a 16:9 frame for images.
+const screenFrames = {
+  mock: "h-[180px] p-[18px] min-[700px]:h-[210px]",
+  "mock-featured": "h-[210px] p-[18px] min-[700px]:h-[270px]",
+  image: "aspect-video",
+};
+
+// Static for now. Drag, tilt and working traffic lights arrive in Phase 3.
 export function Window({
   title,
+  meta,
   screen,
+  screenFrame = "mock",
+  decorativeScreen = false,
   caption,
   children,
   className,
 }: {
   title: string;
+  meta?: string;
   screen?: ReactNode;
+  screenFrame?: keyof typeof screenFrames;
+  /** Hide the screen area from assistive tech (for mock visuals). */
+  decorativeScreen?: boolean;
   caption?: string;
   children: ReactNode;
   className?: string;
@@ -25,9 +39,16 @@ export function Window({
             <i className="block size-[11px] shrink-0 rounded-full bg-tl-zoom" />
           </span>
           <span className="min-w-0 flex-1 truncate">{title}</span>
+          {meta && <span className="shrink-0">{meta}</span>}
         </header>
         {screen && (
-          <div className="relative h-[180px] overflow-hidden border-b border-line bg-bg-2 p-[18px] min-[700px]:h-[210px]">
+          <div
+            aria-hidden={decorativeScreen || undefined}
+            className={cx(
+              "relative overflow-hidden border-b border-line bg-bg-2",
+              screenFrames[screenFrame],
+            )}
+          >
             {screen}
             {caption && (
               <span className="absolute bottom-2.5 right-3.5 font-mono text-[.72rem] uppercase tracking-[.05em] text-muted">

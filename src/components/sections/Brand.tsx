@@ -12,7 +12,7 @@ export function Brand() {
     <Link
       href="/"
       aria-label={`${site.name}, back to top`}
-      className="flex min-h-11 shrink-0 items-center gap-2.5 whitespace-nowrap font-mono text-[.8rem]"
+      className="flex min-h-11 min-w-11 shrink-0 items-center gap-2.5 whitespace-nowrap font-mono text-[.8rem]"
     >
       <b className="grid size-7 place-items-center rounded-lg bg-accent font-medium text-accent-ink">
         {initials}
