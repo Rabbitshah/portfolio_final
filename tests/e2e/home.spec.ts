@@ -32,6 +32,71 @@ for (const [width, height] of viewports) {
   });
 }
 
+// Runs against the production build (where /_next/image does the optimizing).
+for (const width of [390, 1440]) {
+  test(`every project image loads at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    const expected = visibleProjects.filter(
+      (project) => project.visual === "image",
+    ).length;
+    const images = page.locator("#work img");
+    await expect(images).toHaveCount(expected);
+
+    for (let index = 0; index < expected; index++) {
+      const image = images.nth(index);
+      const alt = await image.getAttribute("alt");
+      await image
+        .locator("xpath=ancestor::article[1]")
+        .scrollIntoViewIfNeeded();
+      await expect
+        .poll(
+          () =>
+            image.evaluate(
+              (el: HTMLImageElement) => el.complete && el.naturalWidth > 0,
+            ),
+          { message: `image did not load: ${alt}` },
+        )
+        .toBe(true);
+    }
+  });
+}
+
+test("the bar does not overlap the eyebrow or the h1 at the top of the page", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  expect(await page.evaluate(() => window.scrollY)).toBe(0);
+
+  const boxes = await page.evaluate(() => {
+    const rect = (el: Element | null | undefined) =>
+      el ? el.getBoundingClientRect().toJSON() : null;
+    // The brand link is a direct child of the bar.
+    const bar = document.querySelector(
+      'a[aria-label$="back to top"]',
+    )?.parentElement;
+    const h1 = document.querySelector("h1");
+    return {
+      bar: rect(bar),
+      eyebrow: rect(h1?.previousElementSibling),
+      h1: rect(h1),
+    };
+  });
+  expect(boxes.bar).not.toBeNull();
+  expect(boxes.eyebrow).not.toBeNull();
+  expect(boxes.h1).not.toBeNull();
+
+  type Box = { left: number; right: number; top: number; bottom: number };
+  const intersects = (a: Box, b: Box) =>
+    a.left < b.right &&
+    a.right > b.left &&
+    a.top < b.bottom &&
+    a.bottom > b.top;
+  expect(intersects(boxes.bar!, boxes.eyebrow!)).toBe(false);
+  expect(intersects(boxes.bar!, boxes.h1!)).toBe(false);
+});
+
 test.describe("JavaScript disabled", () => {
   test.use({ javaScriptEnabled: false });
 
