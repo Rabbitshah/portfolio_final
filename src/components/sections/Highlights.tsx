@@ -1,7 +1,10 @@
-import { experience } from "@content/experience";
-import { derivedHighlightLabels, otherHighlights } from "@content/highlights";
-import { papers } from "@content/papers";
-import { visibleProjects } from "@content/projects";
+import {
+  experience,
+  derivedHighlightLabels,
+  otherHighlights,
+  papers,
+  visibleProjects,
+} from "@/lib/content";
 import { Marquee } from "@/components/primitives/Marquee";
 import { deriveStats } from "@/lib/stats";
 

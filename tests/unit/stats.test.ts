@@ -1,7 +1,4 @@
-import { experience } from "@content/experience";
-import { note } from "@content/notes";
-import { papers } from "@content/papers";
-import { visibleProjects } from "@content/projects";
+import { experience, note, papers, visibleProjects } from "@/lib/content";
 import { describe, expect, it } from "vitest";
 import { deriveStats, fillStats } from "@/lib/stats";
 

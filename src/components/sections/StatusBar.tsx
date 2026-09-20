@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { site } from "@content/site";
+import { site } from "@/lib/content";
 import { MobileMenu } from "@/components/interactive/MobileMenu";
 import { ThemeToggle } from "@/components/interactive/ThemeToggle";
 import { BarPill } from "@/components/primitives/BarPill";

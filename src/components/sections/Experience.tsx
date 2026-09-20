@@ -1,4 +1,4 @@
-import { experience } from "@content/experience";
+import { experience } from "@/lib/content";
 import { Section } from "@/components/primitives/Section";
 import { formatRange } from "@/lib/format";
 

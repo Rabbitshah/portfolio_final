@@ -1,4 +1,4 @@
-import type { Project } from "@content/projects";
+import type { Project } from "@/lib/content";
 import Image from "next/image";
 import type { ReactNode } from "react";
 import { Chip } from "@/components/primitives/Chip";

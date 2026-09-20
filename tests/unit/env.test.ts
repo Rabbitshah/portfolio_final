@@ -2,21 +2,32 @@ import { describe, expect, it } from "vitest";
 import { parseEnv } from "@/env";
 
 describe("parseEnv", () => {
-  it("defaults the site URL and leaves optional vars unset", () => {
+  it("leaves optional vars unset and does not invent a site URL", () => {
     const env = parseEnv({});
-    expect(env.NEXT_PUBLIC_SITE_URL).toBe("http://localhost:3000");
+    expect(env.NEXT_PUBLIC_SITE_URL).toBeUndefined();
     expect(env.DATABASE_URL).toBeUndefined();
   });
 
   it("treats empty strings as unset", () => {
     const env = parseEnv({ CONTACT_TO_EMAIL: "", NEXT_PUBLIC_SITE_URL: "" });
     expect(env.CONTACT_TO_EMAIL).toBeUndefined();
-    expect(env.NEXT_PUBLIC_SITE_URL).toBe("http://localhost:3000");
+    expect(env.NEXT_PUBLIC_SITE_URL).toBeUndefined();
   });
 
   it("throws a readable error for invalid values", () => {
     expect(() => parseEnv({ CONTACT_TO_EMAIL: "not-an-email" })).toThrow(
       /CONTACT_TO_EMAIL/,
     );
+  });
+
+  it("keeps the site out of search engines unless SITE_INDEXABLE is exactly true", () => {
+    expect(parseEnv({}).SITE_INDEXABLE).toBe(false);
+    expect(parseEnv({ SITE_INDEXABLE: "" }).SITE_INDEXABLE).toBe(false);
+    expect(parseEnv({ SITE_INDEXABLE: "false" }).SITE_INDEXABLE).toBe(false);
+    expect(parseEnv({ SITE_INDEXABLE: "true" }).SITE_INDEXABLE).toBe(true);
+  });
+
+  it("rejects an unexpected SITE_INDEXABLE value instead of guessing", () => {
+    expect(() => parseEnv({ SITE_INDEXABLE: "yes" })).toThrow(/SITE_INDEXABLE/);
   });
 });

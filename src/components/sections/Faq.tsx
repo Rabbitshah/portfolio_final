@@ -1,4 +1,4 @@
-import { faq } from "@content/faq";
+import { faq } from "@/lib/content";
 import { Section } from "@/components/primitives/Section";
 
 export function Faq() {
