@@ -48,4 +48,6 @@ Plus a one-paragraph summary: what changed, what I should check by hand, and any
 `pnpm dev` · `pnpm build` · `pnpm start` · `pnpm typecheck` · `pnpm lint` · `pnpm test` · `pnpm test:e2e` · `pnpm db:generate` · `pnpm db:migrate`
 (If a script does not exist yet, create it in the phase that needs it.)
 
+Never write files with PowerShell redirection or `Set-Content`. Use the editor tools, and run `pnpm check:encoding` before committing.
+
 @AGENTS.md

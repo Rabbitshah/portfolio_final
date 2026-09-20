@@ -11,7 +11,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "check:encoding": "node scripts/check-encoding.mjs"
   },
   "dependencies": {
     "next": "16.3.5",
