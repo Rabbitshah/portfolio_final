@@ -53,6 +53,8 @@ export function MobileMenu({
         </svg>
       </Dialog.Trigger>
       <Dialog.Portal>
+        {/* In this Radix version the page scroll lock is mounted by Overlay, not Content, so the Overlay is required even though the sheet covers the screen. */}
+        <Dialog.Overlay className="fixed inset-0 z-[59] min-[760px]:hidden" />
         {/* z-[60] sits above the bar (z-50). Radix makes everything outside the dialog inert, so the sheet carries its own copy of the bar with a close button. */}
         <Dialog.Content
           onOpenAutoFocus={(event) => {
