@@ -4,6 +4,7 @@ import {
   Instrument_Serif,
   JetBrains_Mono,
 } from "next/font/google";
+import { Footer } from "@/components/sections/Footer";
 import { StatusBar } from "@/components/sections/StatusBar";
 import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body>
         <StatusBar />
         {children}
+        <Footer />
       </body>
     </html>
   );
