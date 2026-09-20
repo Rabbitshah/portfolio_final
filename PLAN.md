@@ -149,7 +149,7 @@ Body (MDX) = the "Deep dive" text and the case-study page. `short` is the "Quick
 **Log entry:** `date (YYYY-MM), text` (short) or an MDX post.
 **FAQ:** `question, answer`. **Site:** `name, email, github, linkedin, timezone, availability`.
 
-Rule: any missing fact is `TODO(content)` in the file and fails a `pnpm content:check` script in CI for production builds.
+Rule: any missing fact is `TODO(content)` in the file. `pnpm content:check` lists every marker; it is report-only unless `CONTENT_STRICT=1`, when it exits 1.
 
 ## 6. Data model (PostgreSQL, Drizzle)
 
@@ -292,7 +292,7 @@ Headline size uses `clamp()` with both `vw` and `vh` so the CTAs stay above the 
 - Zod schemas and loaders for §5. Move all placeholder copy into `/content`.
 - `/projects/[slug]`, `/log`, `/log/[slug]`. Detail toggle data model (`short` vs body).
 - Metadata API, `sitemap.ts`, `robots.ts`, JSON-LD `Person`, dynamic OG image, canonical URL.
-- `pnpm content:check` fails on `TODO(content)` when `NODE_ENV=production`.
+- `pnpm content:check` lists every `TODO(content)` marker by file. It is report-only unless `CONTENT_STRICT=1`, when it exits 1, and it is not part of the build.
 - **Accept:** adding a project = adding one MDX file; invalid frontmatter fails the build with a clear message; link preview validated in an OG debugger.
 - **Prompt:** *"Do Phase 2. Content is validated with Zod at build time. Do not invent any facts; use TODO(content) markers."*
 
@@ -334,7 +334,8 @@ Build in this order; each item is its own commit and is reduced-motion and point
 
 ### Phase 7 — QA and launch
 - **7-lite (M1):** e2e smoke test, build on CI, custom domain/URL, redirects, Search Console, OG check.
-- **Before launch:** remove the temporary `robots: { index: false, follow: false }` in `src/app/layout.tsx` (marked `TEMP`).
+- **Before launch:** set `SITE_INDEXABLE=true` and `NEXT_PUBLIC_SITE_URL` in Vercel Production.
+- **Before launch:** set `CONTENT_STRICT=1` in the launch CI.
 - **7-full (M4):**
   - Playwright viewport matrix at the 13 sizes: assert `scrollWidth <= innerWidth`, no tap target < 44 px on touch profiles, no text < 11.5 px.
   - axe on light and dark; keyboard test; reduced-motion test; JS-disabled test.
