@@ -31,6 +31,8 @@ const mono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "Maanav Shah",
+  // TEMP: remove at launch (PLAN Phase 7)
+  robots: { index: false, follow: false },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

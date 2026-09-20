@@ -333,6 +333,7 @@ Build in this order; each item is its own commit and is reduced-motion and point
 
 ### Phase 7 — QA and launch
 - **7-lite (M1):** e2e smoke test, build on CI, custom domain/URL, redirects, Search Console, OG check.
+- **Before launch:** remove the temporary `robots: { index: false, follow: false }` in `src/app/layout.tsx` (marked `TEMP`).
 - **7-full (M4):**
   - Playwright viewport matrix at the 13 sizes: assert `scrollWidth <= innerWidth`, no tap target < 44 px on touch profiles, no text < 11.5 px.
   - axe on light and dark; keyboard test; reduced-motion test; JS-disabled test.
