@@ -13,7 +13,7 @@ export function Work() {
         </>
       }
     >
-      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 min-[700px]:grid-cols-2">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 min-[700px]:grid-cols-2 min-[700px]:items-start">
         {visibleProjects.map((project) => (
           <ProjectWindow key={project.slug} project={project} />
         ))}
