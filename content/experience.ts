@@ -26,9 +26,15 @@ export const experience: Experience[] = [
     type: "role",
     start: "2026-07",
     end: null,
-    summary: "Full-time Software Development Engineer in Vadodara.",
-    // TODO(content): add 2-3 true responsibilities in my own words
-    bullets: [],
+    summary:
+      "Software Development Engineer at Praverse Tech, working on backend, integrations, testing and deployment across products.",
+    // TODO(content): confirm wording with employer
+    bullets: [
+      "Build and maintain the backend for the company's products.",
+      "Handle the integrations that connect each product's parts and services.",
+      "Test releases and handle deployment.",
+      "Plan each project by breaking it into tasks and to-dos.",
+    ],
   },
   {
     id: "nexgen-sde-intern",
