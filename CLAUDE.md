@@ -50,4 +50,6 @@ Plus a one-paragraph summary: what changed, what I should check by hand, and any
 
 Never write files with PowerShell redirection or `Set-Content`. Use the editor tools, and run `pnpm check:encoding` before committing.
 
+If typecheck fails on a missing route file after deleting a route, delete .next and rerun.
+
 @AGENTS.md
