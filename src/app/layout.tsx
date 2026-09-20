@@ -6,6 +6,9 @@ import {
 } from "next/font/google";
 import { Footer } from "@/components/sections/Footer";
 import { StatusBar } from "@/components/sections/StatusBar";
+import { env } from "@/env";
+import { site } from "@/lib/content";
+import { buildMetadata, resolveSiteUrl } from "@/lib/seo";
 import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
 
@@ -29,11 +32,11 @@ const mono = JetBrains_Mono({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "Maanav Shah",
-  // TEMP: remove at launch (PLAN Phase 7)
-  robots: { index: false, follow: false },
-};
+export const metadata: Metadata = buildMetadata(
+  site,
+  resolveSiteUrl(env),
+  env.SITE_INDEXABLE,
+);
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (

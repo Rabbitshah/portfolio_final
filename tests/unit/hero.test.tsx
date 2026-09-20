@@ -1,4 +1,4 @@
-import { site } from "@content/site";
+import { site } from "@/lib/content";
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, expect, it } from "vitest";
 import { Hero } from "@/components/sections/Hero";

@@ -34,7 +34,7 @@ export interface Site {
   };
   contact: { email: string };
   links: { github: string; linkedin: string; resume?: string };
-  availability: { open: boolean; label: string; lookingFor: string };
+  availability: { open: boolean; label: string };
   nav: NavItem[];
   menu: NavItem[];
   nowPlaying: string[];
@@ -76,14 +76,9 @@ export const site: Site = {
       "https://drive.google.com/file/d/1WBRX-gUL7_86II5OMMSKCiXdxVHlkQS-/view?usp=sharing",
   },
 
-  // TODO(content): confirm the wording, and whether you are open to relocation or only remote.
-  // TODO(content): decide availability wording now that I am employed
   availability: {
     open: true,
-    label: "Open to remote roles",
-    // TODO(content): confirm this wording (copied from the template's "Looking for" row).
-    // TODO(content): decide availability wording now that I am employed
-    lookingFor: "Full-stack and AI-product roles, remote preferred",
+    label: "Say hi",
   },
 
   // Bar navigation (inline at 760px and up).
@@ -107,7 +102,7 @@ export const site: Site = {
   ],
 
   // Rotating facts in the bar (desktop, 1320px and up). Keep every line true.
-  // TODO(content): confirm "latest project"; PraverseAI may be more recent than the Sustainability Tracker.
+  // TODO(content): confirm "latest project".
   nowPlaying: [
     "latest project: sustainability tracker",
     "published: ieee icscds-2025",

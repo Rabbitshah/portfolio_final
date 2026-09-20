@@ -1,9 +1,11 @@
-import { experience } from "@content/experience";
-import { note } from "@content/notes";
-import { papers } from "@content/papers";
-import { visibleProjects } from "@content/projects";
-import { site } from "@content/site";
-import { skillGroups } from "@content/skills";
+import {
+  experience,
+  note,
+  papers,
+  visibleProjects,
+  site,
+  skillGroups,
+} from "@/lib/content";
 import type { ReactNode } from "react";
 import { Card } from "@/components/primitives/Card";
 import { Chip } from "@/components/primitives/Chip";
@@ -133,7 +135,6 @@ export function About() {
                 "Timezone",
                 `${site.location.timezoneLabel} (${site.location.utcOffset})`,
               ],
-              ["Looking for", site.availability.lookingFor],
             ]}
           />
         </Card>

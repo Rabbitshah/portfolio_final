@@ -1,6 +1,4 @@
-import { experience } from "@content/experience";
-import { papers } from "@content/papers";
-import { visibleProjects } from "@content/projects";
+import { experience, papers, visibleProjects } from "@/lib/content";
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, expect, it } from "vitest";
 import { About } from "@/components/sections/About";

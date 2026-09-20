@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { site } from "@content/site";
+import { site } from "@/lib/content";
 
 const initials = site.name
   .split(" ")

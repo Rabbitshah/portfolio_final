@@ -1,25 +1,17 @@
-import { site } from "@content/site";
+import { site } from "@/lib/content";
 import { Button } from "@/components/primitives/Button";
 import { Container } from "@/components/primitives/Container";
+import { splitHeadline } from "@/lib/headline";
 import { Cube } from "./Cube";
 
-// Words set in italic accent, as in the template. Matched inside site.headline, so the
-// rendered text stays exactly equal to it.
-const emphasis = ["ship", "hold up."];
-
 function Headline({ text }: { text: string }) {
-  const pattern = new RegExp(
-    `(${emphasis.map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`,
+  return splitHeadline(text).map((run, index) =>
+    run.emphasized ? (
+      <em key={index}>{run.text}</em>
+    ) : (
+      <span key={index}>{run.text}</span>
+    ),
   );
-  return text
-    .split(pattern)
-    .map((part, index) =>
-      emphasis.includes(part) ? (
-        <em key={index}>{part}</em>
-      ) : (
-        <span key={index}>{part}</span>
-      ),
-    );
 }
 
 const primaryCta = "max-[559px]:basis-full max-[559px]:justify-center";

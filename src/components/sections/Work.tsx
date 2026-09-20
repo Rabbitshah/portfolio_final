@@ -1,4 +1,4 @@
-import { visibleProjects } from "@content/projects";
+import { visibleProjects } from "@/lib/content";
 import { Section } from "@/components/primitives/Section";
 import { ProjectWindow } from "./ProjectWindow";
 

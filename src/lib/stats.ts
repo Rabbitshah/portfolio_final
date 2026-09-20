@@ -1,6 +1,4 @@
-import type { Experience } from "@content/experience";
-import type { Paper } from "@content/papers";
-import type { Project } from "@content/projects";
+import type { Experience, Paper, Project } from "@/lib/content";
 
 export interface Stats {
   roles: number;

@@ -1,4 +1,4 @@
-import { papers } from "@content/papers";
+import { papers } from "@/lib/content";
 import { Card } from "@/components/primitives/Card";
 import { Section } from "@/components/primitives/Section";
 

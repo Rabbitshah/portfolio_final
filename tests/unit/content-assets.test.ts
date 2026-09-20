@@ -1,10 +1,10 @@
 import { readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { existsWithExactCase } from "@/lib/content/public-files";
 
 const root = process.cwd();
 const contentDir = join(root, "content");
-const publicDir = join(root, "public");
 
 // A path into public/, e.g. "/assets/nexgen.png". Hash links like "/#about" do not match.
 const assetPath = /^\/[^\s#?]+\.[A-Za-z0-9]+$/;
@@ -40,17 +40,6 @@ function walk(
       walk(child, `${where}.${key}`, visit);
     }
   }
-}
-
-// Compares each path segment against a directory listing, so a case mismatch fails
-// on Windows and macOS too (fs.existsSync alone would pass there).
-function existsWithExactCase(publicPath: string): boolean {
-  let dir = publicDir;
-  for (const segment of publicPath.split("/").filter(Boolean)) {
-    if (!readdirSync(dir).includes(segment)) return false;
-    dir = join(dir, segment);
-  }
-  return true;
 }
 
 describe("content asset paths", () => {

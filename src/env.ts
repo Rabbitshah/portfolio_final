@@ -15,7 +15,16 @@ const envSchema = z.object({
   ADMIN_PASSWORD_HASH: z.string().min(1).optional(),
   JWT_SECRET: z.string().min(1).optional(),
   TURNSTILE_SECRET_KEY: z.string().min(1).optional(),
-  NEXT_PUBLIC_SITE_URL: z.url().default("http://localhost:3000"),
+  NEXT_PUBLIC_SITE_URL: z.url().optional(),
+  // "true" lets search engines index the site; anything else (or unset) keeps it noindex.
+  SITE_INDEXABLE: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((value) => value === "true"),
+  // Set by Vercel (the hosts have no https:// prefix). See resolveSiteUrl in src/lib/seo.ts.
+  VERCEL_ENV: z.enum(["production", "preview", "development"]).optional(),
+  VERCEL_URL: z.string().min(1).optional(),
+  VERCEL_PROJECT_PRODUCTION_URL: z.string().min(1).optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;
