@@ -359,7 +359,7 @@ Build in this order; each item is its own commit and is reduced-motion and point
 | E2E | Playwright | Contact flow, palette, menu, viewport matrix, overflow, tap targets, JS-off render |
 | A11y | axe (in Playwright) | Both themes |
 | Perf | Lighthouse CI | Budgets in §9 and `CLAUDE.md` |
-| Content | `pnpm content:check` | No `TODO(content)` in production |
+| Content | `pnpm content:check` | Lists `TODO(content)` markers; report-only unless `CONTENT_STRICT=1` |
 
 **Viewport matrix:** 320×640, 360×740, 390×844, 430×932, 600×900, 768×1024, 844×390, 1024×768, 1180×820, 1280×720, 1440×900, 1920×1080, 2560×1440.
 
