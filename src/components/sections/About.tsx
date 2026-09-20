@@ -71,13 +71,13 @@ export function About() {
         {latest && (
           <Card as="article" className={five}>
             <span className={mono}>Latest role</span>
-            <h3 className={cardTitle}>{latest.org}</h3>
+            <h3 className={cardTitle}>{latest.orgShort ?? latest.org}</h3>
             <p className="max-w-[60ch] text-muted">
               {latest.role}, {formatRange(latest.start, latest.end)}.
             </p>
-            {latest.bullets[0] && (
+            {(latest.summary ?? latest.bullets[0]) && (
               <p className="mt-3 max-w-[60ch] text-muted">
-                {latest.bullets[0]}
+                {latest.summary ?? latest.bullets[0]}
               </p>
             )}
           </Card>

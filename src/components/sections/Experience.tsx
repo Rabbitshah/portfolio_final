@@ -33,16 +33,21 @@ export function Experience() {
               <p className="mt-1 text-muted">
                 {entry.org} · {entry.location}
               </p>
-              <ul className="mt-3 flex max-w-[70ch] flex-col gap-2 text-muted">
-                {entry.bullets.map((bullet) => (
-                  <li
-                    key={bullet}
-                    className="relative pl-[18px] before:absolute before:left-0 before:top-[.72em] before:h-px before:w-2 before:bg-line-strong before:content-['']"
-                  >
-                    {bullet}
-                  </li>
-                ))}
-              </ul>
+              {entry.summary && (
+                <p className="mt-3 max-w-[70ch] text-muted">{entry.summary}</p>
+              )}
+              {entry.bullets.length > 0 && (
+                <ul className="mt-3 flex max-w-[70ch] flex-col gap-2 text-muted">
+                  {entry.bullets.map((bullet) => (
+                    <li
+                      key={bullet}
+                      className="relative pl-[18px] before:absolute before:left-0 before:top-[.72em] before:h-px before:w-2 before:bg-line-strong before:content-['']"
+                    >
+                      {bullet}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </li>
         ))}
