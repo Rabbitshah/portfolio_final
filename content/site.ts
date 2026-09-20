@@ -28,12 +28,13 @@ export interface Site {
     city: string;
     region: string;
     country: string;
-    timezone: string;
+    timezone: string; // IANA name, for code only. Never show it to visitors.
+    timezoneLabel: string; // what visitors see, e.g. "IST"
     utcOffset: string;
   };
   contact: { email: string };
   links: { github: string; linkedin: string; resume?: string };
-  availability: { open: boolean; label: string };
+  availability: { open: boolean; label: string; lookingFor: string };
   nav: NavItem[];
   menu: NavItem[];
   nowPlaying: string[];
@@ -61,6 +62,7 @@ export const site: Site = {
     region: "Gujarat",
     country: "India",
     timezone: "Asia/Kolkata",
+    timezoneLabel: "IST",
     utcOffset: "UTC+5:30",
   },
 
@@ -76,7 +78,12 @@ export const site: Site = {
   },
 
   // TODO(content): confirm the wording, and whether you are open to relocation or only remote.
-  availability: { open: true, label: "Open to remote roles" },
+  availability: {
+    open: true,
+    label: "Open to remote roles",
+    // TODO(content): confirm this wording (copied from the template's "Looking for" row).
+    lookingFor: "Full-stack and AI-product roles, remote preferred",
+  },
 
   // Bar navigation (inline at 760px and up).
   nav: [
