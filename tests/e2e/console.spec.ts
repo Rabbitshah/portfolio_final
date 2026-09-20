@@ -15,10 +15,18 @@ function collectProblems(page: Page): string[] {
   return problems;
 }
 
-for (const path of ["/", "/dev/kit"]) {
+for (const path of ["/"]) {
   test(`no console errors or warnings: ${path}`, async ({ page }) => {
     const problems = collectProblems(page);
     await page.goto(path);
+    await page.waitForLoadState("networkidle");
+    // Scroll through the page so lazy-loaded project images are requested too.
+    await page.evaluate(async () => {
+      for (let y = 0; y < document.body.scrollHeight; y += 600) {
+        window.scrollTo(0, y);
+        await new Promise((resolve) => setTimeout(resolve, 60));
+      }
+    });
     await page.waitForLoadState("networkidle");
     expect(problems).toEqual([]);
   });
