@@ -8,7 +8,14 @@ export interface FaqItem {
 
 export const faq: FaqItem[] = [
   {
+    question: "What are you doing now?",
+    // TODO(content): confirm wording with employer
+    answer:
+      "I'm a Software Development Engineer at Praverse Tech in Vadodara, since July 2026.",
+  },
+  {
     question: "What are you looking for?",
+    // TODO(content): decide availability wording now that I am employed
     answer: "Full-stack or AI-product roles, remote preferred.",
   },
   {

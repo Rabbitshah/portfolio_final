@@ -6,15 +6,30 @@ export interface Experience {
   id: string;
   role: string;
   org: string;
+  orgShort?: string; // shorter name for tight spots, e.g. the About card
   team?: string;
   location: string;
   type: "internship" | "role" | "leadership";
   start: string;
   end: string | null;
+  summary?: string; // one line, used when there are no bullets yet
   bullets: string[];
 }
 
 export const experience: Experience[] = [
+  {
+    id: "praverse-sde",
+    role: "Software Development Engineer",
+    org: "Praverse Tech Private Limited",
+    orgShort: "Praverse Tech",
+    location: "Vadodara, India",
+    type: "role",
+    start: "2026-07",
+    end: null,
+    summary: "Full-time Software Development Engineer in Vadodara.",
+    // TODO(content): add 2-3 true responsibilities in my own words
+    bullets: [],
+  },
   {
     id: "nexgen-sde-intern",
     role: "Software Development Intern",

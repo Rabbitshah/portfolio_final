@@ -10,7 +10,11 @@ export interface LogEntry {
 export const log: LogEntry[] = [
   {
     date: "2026-09",
-    text: "Rebuilt this site: faster, server-friendly, and easier to update.",
+    text: "Rebuilt this site in Next.js.",
+  },
+  {
+    date: "2026-07",
+    text: "Joined Praverse Tech as a Software Development Engineer.",
   },
   {
     date: "2026-05",
