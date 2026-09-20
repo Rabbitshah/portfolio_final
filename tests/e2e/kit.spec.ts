@@ -78,4 +78,46 @@ test.describe("mobile menu at 390px", () => {
     await page.keyboard.press("Escape");
     await expect(dialog).toBeHidden();
   });
+
+  test("moves focus into the dialog, locks page scroll, and returns focus on Escape", async ({
+    page,
+  }) => {
+    await page.goto("/dev/kit");
+    const trigger = page.getByRole("button", { name: "Open menu" });
+    await trigger.click();
+    const dialog = page.getByRole("dialog", { name: "Site menu" });
+    await expect(dialog).toBeVisible();
+
+    // Focus is inside the dialog, on the first link.
+    await expect(dialog.getByRole("link", { name: /About/ })).toBeFocused();
+    expect(
+      await page.evaluate(() =>
+        document
+          .querySelector('[role="dialog"]')
+          ?.contains(document.activeElement),
+      ),
+    ).toBe(true);
+
+    // The page cannot scroll behind the open menu. The body is locked (this is what stops
+    // keyboard and touch scrolling), and a wheel over the sheet does not move the page.
+    const bodyOverflowY = () =>
+      page.evaluate(() => getComputedStyle(document.body).overflowY);
+    expect(await bodyOverflowY()).toBe("hidden");
+    await page.mouse.move(195, 400);
+    await page.mouse.wheel(0, 600);
+    await page.waitForTimeout(300);
+    expect(await page.evaluate(() => window.scrollY)).toBe(0);
+
+    // Escape closes it and focus goes back to the menu button.
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+    await expect(trigger).toBeFocused();
+    expect(await bodyOverflowY()).not.toBe("hidden");
+
+    // Scrolling works again, so the check above is not passing by accident.
+    await page.mouse.wheel(0, 600);
+    await expect
+      .poll(() => page.evaluate(() => window.scrollY))
+      .toBeGreaterThan(0);
+  });
 });
