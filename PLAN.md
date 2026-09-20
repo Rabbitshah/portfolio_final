@@ -84,6 +84,8 @@ Not needed for a portfolio: TanStack Query (use Server Actions/fetch in the two 
 
 ## 4. Repository structure
 
+> For now, content is plain typed TS files in `/content` (`site.ts`, `projects.ts`, `experience.ts`, `skills.ts`, `certifications.ts`, `papers.ts`). Phase 2 adds Zod schemas and loaders. Long-form deep dives move to MDX only if a case-study page needs it. The tree below shows the eventual layout.
+
 ```
 .
 ├─ CLAUDE.md
@@ -127,6 +129,8 @@ Not needed for a portfolio: TanStack Query (use Server Actions/fetch in the two 
 ---
 
 ## 5. Content model (validated with Zod at build time)
+
+> For now, content is plain typed TS files in `/content`. Phase 2 adds the Zod schemas and loaders. Long-form deep dives move to MDX only if a case-study page needs it.
 
 **Project (`content/projects/*.mdx` frontmatter)**
 ```
@@ -270,13 +274,19 @@ Headline size uses `clamp()` with both `vw` and `vh` so the CTAs stay above the 
 - **Accept:** `pnpm typecheck lint test build` pass locally and in CI; empty page deploys to a preview URL.
 - **Prompt:** *"Read CLAUDE.md and PLAN.md. Do Phase 0 only. Propose the plan first. Look up current install commands in the official docs; do not pin versions from memory."*
 
-### Phase 1 — Design system and static shell
+### Phase 1a — Foundation (tokens, primitives, bar)
 - Tokens (§9), `next/font`, no-flash theme, Tailwind theme mapping.
 - Primitives: `Button`, `Chip`, `Card`, `Section`, `Window`, `Reveal` (visible without JS).
-- Sections rendered on the server from **placeholder content** matching the template: Hero, marquee, About bento, Work, Research, Experience, Log, FAQ, Contact, Footer wordmark.
-- Bar + `MobileMenu`. Responsive contract implemented.
+- Bar + `MobileMenu`.
+- Temporary `/dev/kit` page showing every primitive in light and dark.
+- **Accept:** `/dev/kit` matches the template's look at 390, 768, 1440 in both themes; no horizontal scroll at the 13 sizes; axe has no serious or critical violations on `/dev/kit`.
+- **Prompt:** *"Do Phase 1a. Use reference/portfolio-template.html as the visual spec. Server Components only except the mobile menu and theme toggle. Show me screenshots at 390, 768 and 1440 when done."*
+
+### Phase 1b — Sections from the content files
+- Sections rendered on the server from the files in `/content`: Hero, marquee, About bento, Work, Research, Experience, Log, FAQ, Contact, Footer wordmark.
+- Responsive contract implemented. Remove `/dev/kit` at the end.
 - **Accept:** visually matches the template at 390, 768, 1440; readable with JS disabled; no horizontal scroll at the 13 sizes; Lighthouse SEO 100 and Accessibility ≥ 95 on a preview.
-- **Prompt:** *"Do Phase 1. Use reference/portfolio-template.html as the visual spec. Server Components only except the mobile menu and theme toggle. Show me screenshots at 390, 768 and 1440 when done."*
+- **Prompt:** *"Do Phase 1b. Use reference/portfolio-template.html as the visual spec and the files in /content as the only source of content. Show me screenshots at 390, 768 and 1440 when done."*
 
 ### Phase 2 — Content layer, SEO, case studies
 - Zod schemas and loaders for §5. Move all placeholder copy into `/content`.
