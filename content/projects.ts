@@ -69,40 +69,6 @@ export const projects: Project[] = [
     },
   },
   {
-    slug: "praverseai-platform",
-    title: "PraverseAI Platform",
-    subtitle: "AI healthcare & compliance web ecosystem",
-    window: "praversetech.com",
-    // TODO(content): period, your role, and how this relates to NexGen. It is not on your resume. Add it there too.
-    // TODO(content): get written approval from Praverse before launch; describe only what is publicly visible on praversetech.com; never add a code link.
-    status: "shipped",
-    visible: true,
-    order: 2,
-    short:
-      "Production Next.js platform for Praverse Tech: AI-powered pharma compliance workflows, enterprise pages and a content publishing system in one app.",
-    deep: "A production-grade Next.js platform for Praverse Tech that combines AI-powered pharma compliance workflows, enterprise marketing pages, and content publishing in a single web application. It includes AI flows for FDA response generation and SOP support, an MDX blog and case-study system, and a lead-capture stack with Firestore-backed forms, newsletter collection and spam protection.",
-    features: [
-      "AI compliance automation flows for FDA response generation, SOP/DI support and pharma-oriented assistants",
-      "MDX-powered blog and case-study system with tags, reading-time metadata and structured content pages",
-      "Lead capture with Firestore-backed forms, newsletter collection and spam protection",
-      "Responsive multi-domain corporate architecture across pharma AI, robotics, innovation and enterprise pages",
-    ],
-    stack: [
-      "Next.js",
-      "TypeScript",
-      "Tailwind CSS",
-      "Genkit AI",
-      "MDX",
-      "Firestore",
-    ],
-    visual: "image",
-    media: {
-      src: "/assets/praverseai.png",
-      alt: "PraverseAI platform home page",
-    },
-    links: { live: "https://praversetech.com/" },
-  },
-  {
     slug: "study-tracker",
     title: "Study Tracker",
     subtitle: "Exam-prep dashboard",
