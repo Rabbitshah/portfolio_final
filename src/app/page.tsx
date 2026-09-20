@@ -1,4 +1,4 @@
-import { marquee } from "@content/skills";
+import { marquee } from "@/lib/content";
 import { Marquee } from "@/components/primitives/Marquee";
 import { About } from "@/components/sections/About";
 import { Contact } from "@/components/sections/Contact";

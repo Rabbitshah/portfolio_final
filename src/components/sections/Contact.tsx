@@ -1,4 +1,4 @@
-import { site } from "@content/site";
+import { site } from "@/lib/content";
 import { Button } from "@/components/primitives/Button";
 import { Container } from "@/components/primitives/Container";
 

@@ -1,4 +1,4 @@
-import { log } from "@content/log";
+import { log } from "@/lib/content";
 import { Section } from "@/components/primitives/Section";
 import { formatDate } from "@/lib/format";
 

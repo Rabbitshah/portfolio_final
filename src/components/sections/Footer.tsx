@@ -1,4 +1,4 @@
-import { site } from "@content/site";
+import { site } from "@/lib/content";
 import { Container } from "@/components/primitives/Container";
 
 const firstName = site.name.split(" ")[0] ?? site.name;
