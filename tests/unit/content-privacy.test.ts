@@ -13,6 +13,9 @@ const forbidden: [string, RegExp][] = [
   ["CIN", /\bCIN\b/],
   ["GSTIN", /\bGSTIN\b/],
   ["Annexure", /Annexure/i],
+  // The PraverseAI project was removed on purpose; it must not creep back in.
+  ["PraverseAI", /praverseai/i],
+  ["praversetech.com", /praversetech.com/i],
 ];
 
 it("no file in content/ contains private offer-letter details", () => {
@@ -24,5 +27,11 @@ it("no file in content/ contains private offer-letter details", () => {
       if (pattern.test(text)) found.push(`content/${file} contains "${name}"`);
     }
   }
+  expect(found).toEqual([]);
+});
+
+it("public/assets has no file whose name starts with 'praverse'", () => {
+  const dir = join(process.cwd(), "public", "assets");
+  const found = readdirSync(dir).filter((name) => /^praverse/i.test(name));
   expect(found).toEqual([]);
 });
