@@ -16,6 +16,9 @@ const envSchema = z.object({
   JWT_SECRET: z.string().min(1).optional(),
   TURNSTILE_SECRET_KEY: z.string().min(1).optional(),
   NEXT_PUBLIC_SITE_URL: z.url().optional(),
+  // Test only: "1" swaps the database, rate limiter and mailer for local fakes.
+  // Refused on Vercel production (see parseEnv). Never set it in Vercel.
+  E2E_FAKE_SERVICES: z.enum(["1"]).optional(),
   // "true" lets search engines index the site; anything else (or unset) keeps it noindex.
   SITE_INDEXABLE: z
     .enum(["true", "false"])
@@ -38,6 +41,14 @@ export function parseEnv(source: Record<string, string | undefined>): Env {
   if (!result.success) {
     throw new Error(
       `Invalid environment variables:\n${z.prettifyError(result.error)}`,
+    );
+  }
+  if (
+    result.data.E2E_FAKE_SERVICES === "1" &&
+    result.data.VERCEL_ENV === "production"
+  ) {
+    throw new Error(
+      "E2E_FAKE_SERVICES must not be set on Vercel production. Remove it from the project's environment variables.",
     );
   }
   return result.data;
