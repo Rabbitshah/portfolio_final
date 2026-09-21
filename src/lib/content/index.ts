@@ -2,6 +2,7 @@
 // loads, so bad content fails `next build`, `next dev` and the unit tests with a message
 // that names the file and the field. Import content from here, never from @content/*.
 import { certifications as rawCertifications } from "@content/certifications";
+import { contact as rawContact } from "@content/contact";
 import { experience as rawExperience } from "@content/experience";
 import { faq as rawFaq } from "@content/faq";
 import {
@@ -19,6 +20,7 @@ import {
 } from "@content/skills";
 import {
   certificationsSchema,
+  contactCopySchema,
   derivedHighlightLabelsSchema,
   experienceSchema,
   faqSchema,
@@ -35,6 +37,7 @@ import {
 } from "./schemas";
 
 export type { Certification } from "@content/certifications";
+export type { ContactCopy } from "@content/contact";
 export type { Experience } from "@content/experience";
 export type { FaqItem } from "@content/faq";
 export type { Highlight } from "@content/highlights";
@@ -92,6 +95,13 @@ export const otherHighlights = parseContent(
   rawOtherHighlights,
 );
 export const note = parseContent("notes", "note", noteSchema, rawNote);
+
+export const contactCopy = parseContent(
+  "contact",
+  "contact",
+  contactCopySchema,
+  rawContact,
+);
 
 validateRelations({ projects, papers });
 
