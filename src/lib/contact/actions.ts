@@ -4,7 +4,8 @@ import { headers } from "next/headers";
 import { getContactServices } from "@/services/contact";
 import { clientIp } from "./hash";
 import { logContact } from "./logger";
-import { handleSubmission, type ContactState } from "./submit";
+import type { ContactState } from "./state";
+import { handleSubmission } from "./submit";
 
 function field(formData: FormData, name: string): string {
   const value = formData.get(name);

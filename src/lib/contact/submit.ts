@@ -1,25 +1,9 @@
 import { buildEmail } from "./email";
 import { hashIp } from "./hash";
 import { errorName, type ContactLog } from "./logger";
-import { validateContact, type ContactInput, type FieldErrors } from "./schema";
+import { validateContact, type ContactInput } from "./schema";
+import type { ContactState } from "./state";
 import type { Mailer, MessageStore, SubmissionLimiter } from "./types";
-
-export type ContactState =
-  | { status: "idle" }
-  | { status: "success" }
-  | {
-      status: "error";
-      kind: "invalid";
-      fieldErrors: FieldErrors;
-      values: ContactInput;
-    }
-  | {
-      status: "error";
-      kind: "failed" | "unavailable" | "limited";
-      values: ContactInput;
-    };
-
-export const initialContactState: ContactState = { status: "idle" };
 
 export type SubmissionDeps = {
   store: MessageStore;

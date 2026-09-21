@@ -1,12 +1,13 @@
-import { site } from "@/lib/content";
+import { contactCopy, site } from "@/lib/content";
 import { Button } from "@/components/primitives/Button";
 import { Container } from "@/components/primitives/Container";
+import { ContactForm } from "@/components/interactive/ContactForm";
 
 const primaryCta = "max-[559px]:basis-full max-[559px]:justify-center";
 const otherCta =
   "max-[559px]:basis-[calc(50%-6px)] max-[559px]:grow max-[559px]:justify-center";
 
-// No form and no copy-email button yet: mailto and profile links only.
+// The form posts to a Server Action. The mailto and profile links stay as a fallback.
 export function Contact() {
   return (
     <section
@@ -24,6 +25,7 @@ export function Contact() {
         >
           Let&apos;s build <em>something</em>.
         </h2>
+        <ContactForm copy={contactCopy} email={site.contact.email} />
         <div className="flex flex-wrap gap-3">
           <Button
             variant="primary"
