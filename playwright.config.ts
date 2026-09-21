@@ -26,12 +26,15 @@ export default defineConfig({
       url: "http://localhost:3000",
       reuseExistingServer: !process.env.CI,
       timeout: 120 * 1000,
+      // The contact form talks to local fakes, never to the real database, limiter or mailer.
+      env: { E2E_FAKE_SERVICES: "1" },
     },
     {
       command: "pnpm exec next dev -p 3100",
       url: "http://localhost:3100",
       reuseExistingServer: !process.env.CI,
       timeout: 120 * 1000,
+      env: { E2E_FAKE_SERVICES: "1" },
     },
   ],
 });
