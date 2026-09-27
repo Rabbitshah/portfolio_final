@@ -59,6 +59,24 @@ describe("validateContact", () => {
     });
   });
 
+  it("accepts a 4000-character message and rejects 4001", () => {
+    expect(validateContact({ ...good, message: "m".repeat(4000) }).ok).toBe(
+      true,
+    );
+    expect(
+      validateContact({ ...good, message: "m".repeat(4001) }),
+    ).toMatchObject({ ok: false, errors: { message: "messageTooLong" } });
+  });
+
+  it("keeps emoji and non-Latin text unchanged", () => {
+    const input = {
+      name: "Zoë 李雷 Иван 🙂",
+      email: "ada@example.com",
+      message: "नमस्ते! こんにちは 👋🏽 مرحبا — ça va?",
+    };
+    expect(validateContact(input)).toEqual({ ok: true, data: input });
+  });
+
   it("asks for an email when it is empty", () => {
     const result = validateContact({ ...good, email: "" });
     expect(result).toMatchObject({ errors: { email: "emailRequired" } });
@@ -81,6 +99,28 @@ describe("buildEmail", () => {
     const clean = validateContact({ ...good, name });
     if (!clean.ok) throw new Error("expected valid input");
     expect(buildEmail(clean.data, route).subject).not.toMatch(/[\r\n]/);
+  });
+
+  it("keeps CR and LF out of every header, even when given an unvalidated name", () => {
+    const mail = buildEmail(
+      { ...good, name: "Eve\r\nBcc: victim@example.com\rX-A: b\nX-C: d" },
+      route,
+    );
+    for (const header of [mail.from, mail.to, mail.subject, mail.replyTo]) {
+      expect(header).not.toMatch(/[\r\n]/);
+    }
+    expect(mail.subject).toBe(
+      "Portfolio message from Eve Bcc: victim@example.com X-A: b X-C: d",
+    );
+  });
+
+  it("keeps emoji, non-Latin text and line breaks in the subject and both bodies", () => {
+    const message = "नमस्ते 👋🏽\nSecond line\n\nこんにちは";
+    const mail = buildEmail({ ...good, name: "Zoë 李雷 🙂", message }, route);
+    expect(mail.subject).toBe("Portfolio message from Zoë 李雷 🙂");
+    expect(mail.text).toContain(message);
+    expect(mail.html).toContain(message);
+    expect(mail.html).toContain("white-space:pre-wrap");
   });
 
   it("limits the name in the subject to 60 characters", () => {
