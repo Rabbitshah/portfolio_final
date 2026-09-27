@@ -1,6 +1,6 @@
 import { buildEmail } from "./email";
 import { hashIp } from "./hash";
-import { errorName, type ContactLog } from "./logger";
+import { errorDetail, type ContactLog } from "./logger";
 import { validateContact, type ContactInput } from "./schema";
 import type { ContactState } from "./state";
 import type { Mailer, MessageStore, SubmissionLimiter } from "./types";
@@ -58,7 +58,7 @@ export async function handleSubmission(
       return { status: "error", kind: "limited", values };
     }
   } catch (error) {
-    deps.log("limiter_failed", { errorName: errorName(error) });
+    deps.log("limiter_failed", errorDetail(error));
     return { status: "error", kind: "unavailable", values };
   }
 
@@ -71,7 +71,7 @@ export async function handleSubmission(
       ipHash,
     });
   } catch (error) {
-    deps.log("store_failed", { errorName: errorName(error) });
+    deps.log("store_failed", errorDetail(error));
     return { status: "error", kind: "failed", values };
   }
 
@@ -80,14 +80,14 @@ export async function handleSubmission(
       buildEmail(values, { from: deps.from, to: deps.to }),
     );
   } catch (error) {
-    deps.log("mail_failed", { errorName: errorName(error) });
+    deps.log("mail_failed", errorDetail(error));
     return { status: "success" };
   }
 
   try {
     await deps.store.markNotified(id);
   } catch (error) {
-    deps.log("mark_notified_failed", { errorName: errorName(error) });
+    deps.log("mark_notified_failed", errorDetail(error));
   }
   return { status: "success" };
 }

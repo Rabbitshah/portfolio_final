@@ -7,6 +7,14 @@ vi.mock("@/env", () => ({
   },
 }));
 
+// What the Resend SDK resolves with; each test sets it.
+const resendMock = vi.hoisted(() => ({ result: {} as unknown }));
+vi.mock("resend", () => ({
+  Resend: class {
+    emails = { send: async () => resendMock.result };
+  },
+}));
+
 vi.mock("next/headers", () => ({
   headers: async () => new Headers({ "x-forwarded-for": "203.0.113.9" }),
 }));
@@ -15,6 +23,7 @@ import { submitContact } from "@/lib/contact/actions";
 import { initialContactState } from "@/lib/contact/state";
 import { handleSubmission } from "@/lib/contact/submit";
 import { getContactServices } from "@/services/contact";
+import { createResendMailer } from "@/services/mailer";
 
 const full = {
   DATABASE_URL: "postgres://u:secret-pw@db.example/x",
@@ -158,5 +167,43 @@ describe("production fails closed on the rate limiter", () => {
     expect(log).toHaveBeenCalledWith("limiter_failed", {
       errorName: "RatelimitTimeout",
     });
+  });
+});
+
+describe("createResendMailer", () => {
+  const mail = {
+    from: "site@example.com",
+    to: "me@example.com",
+    subject: "Portfolio message from Ada",
+    text: "Hi",
+    html: "<p>Hi</p>",
+    replyTo: "ada@example.com",
+  };
+
+  it("resolves when Resend accepts the email", async () => {
+    resendMock.result = { data: { id: "email-1" }, error: null };
+    await expect(createResendMailer("re_key").send(mail)).resolves.toBe(
+      undefined,
+    );
+  });
+
+  it("throws with Resend's fixed error name and HTTP status, not its message", async () => {
+    resendMock.result = {
+      data: null,
+      error: {
+        name: "validation_error",
+        statusCode: 422,
+        message: "Invalid `to` field: ada@example.com",
+      },
+    };
+    const failure = await createResendMailer("re_key")
+      .send(mail)
+      .catch((error: unknown) => error);
+    expect(failure).toBeInstanceOf(Error);
+    expect(failure).toMatchObject({
+      name: "Resend_validation_error",
+      statusCode: 422,
+    });
+    expect(String((failure as Error).message)).not.toContain("ada@");
   });
 });

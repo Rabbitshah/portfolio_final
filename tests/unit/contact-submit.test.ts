@@ -1,3 +1,5 @@
+import { NeonDbError } from "@neondatabase/serverless";
+import { DrizzleQueryError } from "drizzle-orm";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { logContact, type ContactEvent } from "@/lib/contact/logger";
 import {
@@ -244,5 +246,92 @@ describe("console capture", () => {
       expect(output).not.toContain(value);
     }
     expect(output).not.toContain("hunter2");
+  });
+
+  it("each failure logs a fixed event, the error class and a status or SQLSTATE, never text", async () => {
+    const secret = "zebulon.quimby@example.org";
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    // The shapes the real services throw. Drizzle puts the query parameters in its message.
+    const wrapped = (cause: Error) =>
+      new DrizzleQueryError("insert into messages ...", [secret], cause);
+    const sqlError = Object.assign(new NeonDbError(`duplicate ${secret}`), {
+      code: "23505",
+    });
+    const httpError = new NeonDbError(
+      `Server error (HTTP status 503): ${secret}`,
+    );
+    const resendError = Object.assign(new Error("Resend rejected the email"), {
+      name: "Resend_rate_limit_exceeded",
+      statusCode: 429,
+    });
+    const timeout = Object.assign(new Error("Upstash did not answer in time"), {
+      name: "RatelimitTimeout",
+    });
+    const throws = (value: Error) => async () => {
+      throw value;
+    };
+
+    const base = { ...setup().deps, log: logContact };
+    const cases: [SubmissionDeps, object][] = [
+      [
+        { ...base, limiter: { allow: throws(timeout) } },
+        { event: "limiter_failed", errorName: "RatelimitTimeout" },
+      ],
+      [
+        { ...base, limiter: { allow: throws(new TypeError(secret)) } },
+        { event: "limiter_failed", errorName: "TypeError" },
+      ],
+      [
+        {
+          ...base,
+          store: {
+            insert: throws(wrapped(sqlError)),
+            markNotified: async () => {},
+          },
+        },
+        { event: "store_failed", errorName: "NeonDbError", sqlState: "23505" },
+      ],
+      [
+        {
+          ...base,
+          store: {
+            insert: throws(wrapped(httpError)),
+            markNotified: async () => {},
+          },
+        },
+        { event: "store_failed", errorName: "NeonDbError", status: 503 },
+      ],
+      [
+        { ...base, mailer: { send: throws(resendError) } },
+        {
+          event: "mail_failed",
+          errorName: "Resend_rate_limit_exceeded",
+          status: 429,
+        },
+      ],
+      [
+        {
+          ...base,
+          store: {
+            insert: async () => "id",
+            markNotified: throws(wrapped(sqlError)),
+          },
+        },
+        {
+          event: "mark_notified_failed",
+          errorName: "NeonDbError",
+          sqlState: "23505",
+        },
+      ],
+    ];
+
+    for (const [deps, expected] of cases) {
+      error.mockClear();
+      await handleSubmission(deps, submission);
+      expect(error).toHaveBeenCalledTimes(1);
+      const line = String(error.mock.calls[0]?.[0]);
+      expect(JSON.parse(line)).toEqual({ scope: "contact", ...expected });
+      expect(line).not.toContain(secret);
+    }
   });
 });

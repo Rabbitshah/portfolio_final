@@ -7,8 +7,10 @@ export function createResendMailer(apiKey: string): Mailer {
     async send(mail) {
       const { error } = await resend.emails.send(mail);
       if (error) {
-        // Resend's error text can be long; the name is enough to tell what went wrong.
-        const failure = new Error("Resend rejected the email");
+        // Resend's error text can echo addresses; its fixed name and HTTP status are enough.
+        const failure = Object.assign(new Error("Resend rejected the email"), {
+          statusCode: error.statusCode,
+        });
         failure.name = `Resend_${error.name}`;
         throw failure;
       }
