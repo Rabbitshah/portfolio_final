@@ -197,7 +197,7 @@ Every interactive piece is a small client island. The template's JS is the behav
 | Footer wordmark | `Wordmark` | Letters lift toward pointer (fine pointer, motion allowed) |
 | Doodle mode | `DoodleLayer` | Canvas fixed layer, DPR-aware, ink fades ~3 s, Esc exits, fine pointer only |
 | Cursor ring, magnetic buttons, card spotlight | `CursorRing`, `Magnetic`, `Spotlight` | Fine pointer + motion allowed only |
-| Reveal on scroll, count-up | `Reveal`, `CountUp` | Motion `whileInView`; visible by default without JS |
+| Reveal on scroll, count-up | `Reveal`, `CountUp` | IntersectionObserver + `element.animate()` (Motion's `m`/`whileInView` measured +31 KB first-load JS for this alone); visible by default without JS |
 | Theme toggle | `ThemeToggle` | System default + saved choice; no flash on load (cookie or inline script) |
 | Copy email | `CopyEmail` | Clipboard with graceful failure message |
 
