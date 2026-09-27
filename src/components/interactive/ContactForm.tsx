@@ -9,7 +9,7 @@ import { initialContactState } from "@/lib/contact/state";
 import { cx } from "@/lib/cx";
 
 // The form is a Client Component wired to a Server Action with useActionState. That is what
-// lets it submit as a plain POST when JavaScript is off; the "/#contact" permalink tells React
+// lets it submit as a plain POST when JavaScript is off; the "/#contact-form" permalink tells React
 // where the no-JS result should render.
 
 const emptyValues = { name: "", email: "", message: "" };
@@ -27,7 +27,7 @@ export function ContactForm({
   const [state, formAction, pending] = useActionState(
     submitContact,
     initialContactState,
-    "/#contact",
+    "/#contact-form",
   );
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -110,6 +110,7 @@ export function ContactForm({
   return (
     <form
       ref={formRef}
+      id="contact-form"
       action={formAction}
       noValidate
       className="relative mb-8 grid max-w-[640px] gap-5"
