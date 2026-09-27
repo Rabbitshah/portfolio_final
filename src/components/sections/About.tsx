@@ -9,6 +9,7 @@ import {
 import type { ReactNode } from "react";
 import { Card } from "@/components/primitives/Card";
 import { Chip } from "@/components/primitives/Chip";
+import { CountUp } from "@/components/primitives/CountUp";
 import { Section } from "@/components/primitives/Section";
 import { Window } from "@/components/primitives/Window";
 import { cx } from "@/lib/cx";
@@ -97,7 +98,7 @@ export function About() {
             ).map(([value, label]) => (
               <div key={label}>
                 <b className="block font-serif text-[clamp(2.6rem,5vw,4rem)] font-normal leading-none text-accent-text">
-                  {value}
+                  <CountUp value={value} />
                 </b>
                 <span className="mt-1.5 block text-[.85rem] leading-[1.3] text-muted">
                   {label}

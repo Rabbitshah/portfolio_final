@@ -27,7 +27,10 @@ it("shows the derived counts, not hard-coded ones", () => {
   render(<About />);
   const card = screen.getByText("By the numbers").closest("article")!;
   const value = (label: string) =>
-    within(card).getByText(label).previousElementSibling?.textContent;
+    // The screen-reader copy holds the final number; the visible digits may be mid-count.
+    within(card)
+      .getByText(label)
+      .previousElementSibling?.querySelector(".sr-only")?.textContent;
   expect(value("roles & internships")).toBe(String(stats.roles));
   expect(value("projects")).toBe(String(stats.projects));
   expect(value("published papers")).toBe(String(stats.papers));
