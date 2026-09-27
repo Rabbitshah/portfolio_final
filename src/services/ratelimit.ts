@@ -5,8 +5,9 @@ import type { SubmissionLimiter } from "@/lib/contact/types";
 export const LIMIT = 5;
 export const WINDOW_MS = 60 * 60 * 1000;
 
-// No `timeout` option on purpose: Upstash treats a timeout as "allowed", which would fail open.
-// A network error throws instead, and the caller turns that into a refusal.
+// Upstash's own timeout (5 s by default) answers "allowed" with reason "timeout", which would
+// fail open. That answer is turned into an error here, like a network error, and the caller
+// turns both into a refusal.
 export function createUpstashLimiter(
   url: string,
   token: string,
@@ -18,7 +19,12 @@ export function createUpstashLimiter(
   });
   return {
     async allow(key) {
-      const { success } = await limiter.limit(key);
+      const { success, reason } = await limiter.limit(key);
+      if (reason === "timeout") {
+        const failure = new Error("Upstash did not answer in time");
+        failure.name = "RatelimitTimeout";
+        throw failure;
+      }
       return success;
     },
   };
