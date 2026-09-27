@@ -335,6 +335,7 @@ Build in this order; each item is its own commit and is reduced-motion and point
 - **7-lite (M1):** e2e smoke test, build on CI, custom domain/URL, redirects, Search Console, OG check.
 - **Before launch:** set `SITE_INDEXABLE=true` and `NEXT_PUBLIC_SITE_URL` in Vercel Production.
 - **Before launch:** set `CONTENT_STRICT=1` in the launch CI.
+- **Before launch (blocking):** confirm whether the Resend SDK prints raw output (including message content) to console/stderr on a failed send, independent of our logger. Two live-service runs showed nothing, but neither is conclusive proof of silence on failure. Verify deliberately, e.g. temporarily point `RESEND_API_KEY` at an invalid key or `CONTACT_FROM_EMAIL` at an unverified domain in a throwaway local run, capture full stdout+stderr, then revert. Do this before the contact form goes live in production.
 - **7-full (M4):**
   - Playwright viewport matrix at the 13 sizes: assert `scrollWidth <= innerWidth`, no tap target < 44 px on touch profiles, no text < 11.5 px.
   - axe on light and dark; keyboard test; reduced-motion test; JS-disabled test.
