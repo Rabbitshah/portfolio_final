@@ -240,6 +240,49 @@ for (const [width, height] of viewports) {
   });
 }
 
+// WCAG 2.4.11 Focus Not Obscured: the fixed bar must not cover the field focus moves to.
+// The page starts with the name field tucked under the bar, so focus() has to scroll it clear
+// (html's scroll-padding-top is what makes it stop below the bar).
+for (const [width, height] of [
+  [390, 844],
+  [1440, 900],
+] as const) {
+  test(`the focused invalid field is not hidden by the fixed bar at ${width}px`, async ({
+    page,
+  }) => {
+    await ownAddress(page);
+    await page.setViewportSize({ width, height });
+    await page.goto("/");
+    const name = page.getByLabel(contact.labels.name);
+    await name.evaluate((el) => {
+      const top = el.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({ top: top - 10, behavior: "instant" });
+    });
+    await submit(page).click();
+    await expect(name).toBeFocused();
+
+    // Smooth scrolling: wait until the page has stopped moving.
+    await expect
+      .poll(async () => {
+        const first = await page.evaluate(() => window.scrollY);
+        await page.waitForTimeout(150);
+        return (await page.evaluate(() => window.scrollY)) === first;
+      })
+      .toBe(true);
+
+    const bar = await page
+      .locator("div.fixed.top-0 > div")
+      .first()
+      .boundingBox();
+    const field = await name.boundingBox();
+    if (!bar || !field) throw new Error("bar or field not rendered");
+    expect(field.y).toBeGreaterThanOrEqual(bar.y + bar.height + 8);
+    expect(field.y + field.height).toBeLessThanOrEqual(height);
+    expect(field.x).toBeGreaterThanOrEqual(0);
+    expect(field.x + field.width).toBeLessThanOrEqual(width);
+  });
+}
+
 test("inputs and the submit button are at least 44px tall on a touch screen", async ({
   browser,
 }) => {
