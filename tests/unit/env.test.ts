@@ -30,4 +30,24 @@ describe("parseEnv", () => {
   it("rejects an unexpected SITE_INDEXABLE value instead of guessing", () => {
     expect(() => parseEnv({ SITE_INDEXABLE: "yes" })).toThrow(/SITE_INDEXABLE/);
   });
+
+  it("accepts E2E_FAKE_SERVICES=1 outside production", () => {
+    expect(parseEnv({ E2E_FAKE_SERVICES: "1" }).E2E_FAKE_SERVICES).toBe("1");
+    expect(
+      parseEnv({ E2E_FAKE_SERVICES: "1", VERCEL_ENV: "preview" })
+        .E2E_FAKE_SERVICES,
+    ).toBe("1");
+  });
+
+  it("refuses E2E_FAKE_SERVICES=1 on Vercel production", () => {
+    expect(() =>
+      parseEnv({ E2E_FAKE_SERVICES: "1", VERCEL_ENV: "production" }),
+    ).toThrow(/E2E_FAKE_SERVICES/);
+  });
+
+  it("rejects any other E2E_FAKE_SERVICES value", () => {
+    expect(() => parseEnv({ E2E_FAKE_SERVICES: "true" })).toThrow(
+      /E2E_FAKE_SERVICES/,
+    );
+  });
 });

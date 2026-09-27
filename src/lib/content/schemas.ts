@@ -1,4 +1,5 @@
 import type { Certification } from "@content/certifications";
+import type { ContactCopy } from "@content/contact";
 import type { Experience } from "@content/experience";
 import type { FaqItem } from "@content/faq";
 import type { Highlight } from "@content/highlights";
@@ -287,6 +288,47 @@ export const noteSchema: z.ZodType<Note> = z.strictObject({
         }
       });
     }),
+});
+
+// ---------- contact form copy ----------
+
+const emailToken = /\{(\w+)\}/g;
+
+function onlyEmailToken(message: string, ctx: z.RefinementCtx): void {
+  for (const match of message.matchAll(emailToken)) {
+    if (match[1] !== "email") {
+      ctx.addIssue({
+        code: "custom",
+        input: match[1],
+        message: `Unknown token {${match[1]}}; only {email} is allowed`,
+      });
+    }
+  }
+}
+
+const emailCopy = text.superRefine(onlyEmailToken);
+
+export const contactCopySchema: z.ZodType<ContactCopy> = z.strictObject({
+  labels: z.strictObject({ name: text, email: text, message: text }),
+  messageHint: text.optional(),
+  submit: text,
+  pending: text,
+  privacy: text,
+  success: text,
+  errorPrefix: text,
+  fieldErrors: z.strictObject({
+    nameRequired: text,
+    nameTooLong: text,
+    emailRequired: text,
+    emailInvalid: text,
+    messageTooShort: text,
+    messageTooLong: text,
+  }),
+  errors: z.strictObject({
+    failed: emailCopy,
+    unavailable: emailCopy,
+    limited: emailCopy,
+  }),
 });
 
 // ---------- errors and helpers ----------

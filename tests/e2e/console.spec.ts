@@ -1,3 +1,4 @@
+import { randomInt } from "node:crypto";
 import { expect, test, type Page } from "@playwright/test";
 
 // Fails on any console error or warning, and on uncaught page errors. This includes
@@ -51,3 +52,26 @@ for (const path of ["/"]) {
     expect(problems).toEqual([]);
   });
 }
+
+test("no console errors or warnings when the contact form is used", async ({
+  page,
+}) => {
+  const problems = collectProblems(page);
+  // Own client address, so the rate limit from other tests does not apply.
+  await page.context().setExtraHTTPHeaders({
+    "x-forwarded-for": `10.${randomInt(256)}.${randomInt(256)}.${randomInt(1, 255)}`,
+  });
+  await page.goto("/");
+  await page.waitForLoadState("networkidle");
+
+  await page.getByRole("button", { name: "Send message" }).click();
+  await expect(page.locator("#contact-name-error")).toBeVisible();
+
+  await page.getByLabel("Your name").fill("Ada Lovelace");
+  await page.getByLabel("Your email").fill("ada@example.com");
+  await page.getByLabel("Message").fill("A console check message.");
+  await page.getByRole("button", { name: "Send message" }).click();
+  await expect(page.locator('#contact [role="status"]')).not.toBeEmpty();
+
+  expect(problems).toEqual([]);
+});

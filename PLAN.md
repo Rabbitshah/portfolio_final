@@ -42,8 +42,8 @@ Browser
 Next.js (Vercel)
   ├─ Server Components ── read typed content (MDX/JSON validated by Zod)
   ├─ Client islands ───── interactions (palette, companion, windows, doodle…)
-  ├─ Route Handlers ───── /api/contact  /api/ask (optional)  /api/health
-  ├─ Server Actions ───── contact form submit (progressive enhancement)
+  ├─ Route Handlers ───── /api/ask (optional)  /api/health
+  ├─ Server Actions ───── contact form submit (no /api/contact route; works without JS)
   └─ Services (src/services)
         ├─ db.ts       → PostgreSQL (Neon or Supabase) via Drizzle
         ├─ ratelimit.ts→ Upstash Redis
@@ -70,7 +70,7 @@ Rule of thumb: content is static and lives in git. Only *visitor-generated* data
 | DB | PostgreSQL (Neon or Supabase) + Drizzle | You know Postgres; Drizzle is light | Core (contact) |
 | Rate limit | Upstash Redis | Serverless-friendly; you know Redis | Core (contact) |
 | Email | Resend | Simple API. Verify sender/domain rules in its docs | Core (contact) |
-| Spam guard | Honeypot + time trap; Cloudflare Turnstile if needed | No CAPTCHA friction | Core / optional |
+| Spam guard | Honeypot + rate limit; Cloudflare Turnstile if needed | No CAPTCHA friction | Core / optional |
 | Admin auth | Single-admin custom JWT via `jose` (signed httpOnly cookie, password hash in env) | Matches your "custom JWT, not Firebase" rule; no user table | Optional |
 | AI | Provider adapter, model from env | Grounded Q&A over `/content` | Optional (Phase 5) |
 | Analytics | Vercel Analytics or Plausible | Privacy-friendly, no cookie banner | Optional |
@@ -108,7 +108,7 @@ Not needed for a portfolio: TanStack Query (use Server Actions/fetch in the two 
 │  │  ├─ page.tsx            # single-page home
 │  │  ├─ projects/[slug]/page.tsx
 │  │  ├─ log/page.tsx  log/[slug]/page.tsx
-│  │  ├─ api/contact/route.ts  api/ask/route.ts  api/health/route.ts
+│  │  ├─ api/ask/route.ts  api/health/route.ts
 │  │  ├─ opengraph-image.tsx  sitemap.ts  robots.ts  not-found.tsx
 │  │  └─ admin/…             # optional
 │  ├─ components/
@@ -155,7 +155,7 @@ Rule: any missing fact is `TODO(content)` in the file. `pnpm content:check` list
 
 | Table | Columns | Notes |
 |---|---|---|
-| `messages` | `id`, `name`, `email`, `body`, `created_at`, `ip_hash`, `user_agent_hash`, `status` (`new`/`read`/`spam`) | Contact form. Store hashed IP only |
+| `messages` | `id`, `name`, `email`, `body`, `created_at`, `ip_hash`, `status` (`new`/`read`/`spam`), `notified_at` | Contact form. Store a salted hash of the IP only. `notified_at` stays null until the email to you was sent |
 | `chat_events` (optional) | `id`, `created_at`, `ip_hash`, `tokens_in`, `tokens_out`, `refused` (bool) | **No question text stored** unless you decide otherwise and disclose it |
 | `guestbook` (backlog) | `id`, `name`, `strokes_json`, `created_at`, `approved` | Doodle wall; needs moderation |
 
@@ -166,13 +166,12 @@ Rule: any missing fact is `TODO(content)` in the file. `pnpm content:check` list
 | `/` | Server | Single-page home, all sections |
 | `/projects/[slug]` | Server (SSG) | Case study from MDX |
 | `/log`, `/log/[slug]` | Server (SSG) | Build log |
-| `/api/contact` | POST | Zod-validate → honeypot/time check → rate limit → store → email → 200/4xx JSON |
 | `/api/ask` | POST, streaming | Optional grounded Q&A |
 | `/api/health` | GET | Liveness for uptime checks |
 | `/opengraph-image`, `/sitemap.xml`, `/robots.txt` | Metadata routes | SEO |
 | `/admin` | Server + JWT | Optional inbox |
 
-Contact form uses a Server Action with a plain-form fallback, so it works without JS.
+The contact form is a Client Component using `useActionState` with a Server Action (`src/lib/contact/actions.ts`), so it also posts with JS off. There is no `/api/contact` route, and `/` stays statically generated.
 
 ---
 
@@ -298,7 +297,7 @@ Headline size uses `clamp()` with both `vw` and `vh` so the CTAs stay above the 
 
 ### Phase 4 — Contact backend (do this before Phase 3 for M1)
 - Drizzle schema + migration for `messages`. `src/services/{db,ratelimit,mailer}.ts`.
-- Server Action + `/api/contact`: Zod, honeypot, minimum-time trap, per-IP rate limit, store (hashed IP), send email to you, friendly errors, works without JS.
+- Server Action (no `/api/contact` route): Zod, honeypot, per-IP rate limit (5 per hour, fails closed), store (salted IP hash), send email to you, friendly errors that start with "Error:", works without JS.
 - Success/failure UI with `aria-live`.
 - **Accept:** unit tests for validation and rate limiting; e2e test submits a message on a preview; a spam-looking post is rejected; nothing sensitive in logs.
 - **Prompt:** *"Do Phase 4. Follow the services/ convention. Verify the Resend and Upstash APIs in their docs first. Add tests. Never log message bodies."*
@@ -367,14 +366,14 @@ Build in this order; each item is its own commit and is reduced-motion and point
 - [ ] Security headers and a CSP (Next config/middleware); no inline script except the theme bootstrap (nonce or hash)
 - [ ] All inputs validated with Zod; output escaped; email headers built safely (no header injection)
 - [ ] Rate limits on contact, ask, and admin login
-- [ ] Honeypot + time trap; Turnstile only if spam appears
+- [ ] Honeypot + rate limit; Turnstile only if spam appears
 - [ ] Secrets only in env; `NEXT_PUBLIC_*` reviewed; nothing sensitive in the client bundle
 - [ ] Hash IPs; no message or chat text in analytics or logs
 - [ ] Phone number never published; consider rendering the email client-side to reduce scraping
 - [ ] Dependency audit in CI
 
 ## 13. Environment variables
-`DATABASE_URL`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `RESEND_API_KEY`, `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL`, `IP_HASH_SALT`, `NEXT_PUBLIC_SITE_URL`, optional: `LLM_PROVIDER`, `LLM_MODEL`, `LLM_API_KEY`, `ASK_DAILY_TOKEN_CAP`, `ADMIN_PASSWORD_HASH`, `JWT_SECRET`, `TURNSTILE_SECRET_KEY`.
+`DATABASE_URL`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `RESEND_API_KEY`, `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL`, `IP_HASH_SALT`, `NEXT_PUBLIC_SITE_URL`, optional: `LLM_PROVIDER`, `LLM_MODEL`, `LLM_API_KEY`, `ASK_DAILY_TOKEN_CAP`, `ADMIN_PASSWORD_HASH`, `JWT_SECRET`, `TURNSTILE_SECRET_KEY`. Test only: `E2E_FAKE_SERVICES` (swaps the database, rate limiter and mailer for local fakes; never set it in Vercel; `src/env.ts` refuses it on production).
 All read through `src/env.ts`. Provide `.env.example` with no real values.
 
 ## 14. Content TODOs (do not ship until resolved)
@@ -394,6 +393,6 @@ All read through `src/env.ts`. Provide `.env.example` with no real values.
 | AI assistant says something false about you | Grounded prompt, refuse-when-unsure, eval suite, visible disclaimer. Remove it if it ever misleads |
 | AI cost or abuse | Rate limits, token cap, input limit, kill switch env var |
 | Motion hurts performance or accessibility | Budgets, reduced-motion path, JS-off path, pointer gating |
-| Spam through the contact form | Honeypot, time trap, rate limit, optional Turnstile |
+| Spam through the contact form | Honeypot, rate limit, optional Turnstile |
 | Content drift between template and site | `/content` is the single source; template is only a visual spec |
 | Fonts/line breaks differ from template | Re-check after `next/font` is wired |
