@@ -1,0 +1,18 @@
+{
+  "route": "/",
+  "baselineKb": 156.1,
+  "toleranceKb": 2,
+  "warnAboveKb": 170,
+  "history": [
+    {
+      "change": "main before Phase 3 (f0ebfb7)",
+      "beforeKb": null,
+      "afterKb": 155.4
+    },
+    {
+      "change": "Phase 3 item 1: useFinePointer, Reveal (IntersectionObserver + element.animate), CountUp, Motion's useReducedMotion",
+      "beforeKb": 155.4,
+      "afterKb": 156.1
+    }
+  ]
+}
