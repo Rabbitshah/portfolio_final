@@ -373,7 +373,7 @@ Build in this order; each item is its own commit and is reduced-motion and point
 - [ ] Dependency audit in CI
 
 ## 13. Environment variables
-`DATABASE_URL`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `RESEND_API_KEY`, `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL`, `IP_HASH_SALT`, `NEXT_PUBLIC_SITE_URL`, optional: `LLM_PROVIDER`, `LLM_MODEL`, `LLM_API_KEY`, `ASK_DAILY_TOKEN_CAP`, `ADMIN_PASSWORD_HASH`, `JWT_SECRET`, `TURNSTILE_SECRET_KEY`.
+`DATABASE_URL`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `RESEND_API_KEY`, `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL`, `IP_HASH_SALT`, `NEXT_PUBLIC_SITE_URL`, optional: `LLM_PROVIDER`, `LLM_MODEL`, `LLM_API_KEY`, `ASK_DAILY_TOKEN_CAP`, `ADMIN_PASSWORD_HASH`, `JWT_SECRET`, `TURNSTILE_SECRET_KEY`. Test only: `E2E_FAKE_SERVICES` (swaps the database, rate limiter and mailer for local fakes; never set it in Vercel; `src/env.ts` refuses it on production).
 All read through `src/env.ts`. Provide `.env.example` with no real values.
 
 ## 14. Content TODOs (do not ship until resolved)
