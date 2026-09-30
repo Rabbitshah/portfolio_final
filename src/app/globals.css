@@ -161,6 +161,7 @@
 
   /* Marquee: two identical lists; the second is aria-hidden. Pure CSS. */
   .marquee {
+    position: relative;
     display: flex;
     overflow: hidden;
     user-select: none;
@@ -172,7 +173,8 @@
     justify-content: space-around;
     animation: marquee-slide 32s linear infinite;
   }
-  .marquee:hover > ul {
+  .marquee:hover > ul,
+  .marquee > button[aria-pressed="true"] ~ ul {
     animation-play-state: paused;
   }
 
@@ -359,6 +361,8 @@
   .marquee > ul {
     flex-wrap: wrap;
     animation: none;
+    /* Room for the pause button, which stays present. */
+    padding-right: 4rem;
   }
   .marquee > ul[aria-hidden="true"] {
     display: none;
