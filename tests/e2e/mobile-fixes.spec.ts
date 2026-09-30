@@ -13,8 +13,8 @@ test.describe("Toolbox below 700px", () => {
   }) => {
     await page.goto("/");
     const card = toolbox(page);
-    await expect(card.getByRole("heading", { name: "Frontend" })).toBeVisible();
-    const hidden = card.getByRole("heading", { name: "Game development" });
+    await expect(card.locator("h3", { hasText: "Frontend" })).toBeVisible();
+    const hidden = card.locator("h3", { hasText: "Game development" });
     await expect(hidden).toHaveCount(2); // one in the wide grid, one in the toggle
     await expect(hidden.first()).toBeHidden();
     await expect(hidden.last()).toBeHidden();
@@ -30,7 +30,7 @@ test.describe("Toolbox below 700px", () => {
     test("the toggle still works", async ({ page }) => {
       await page.goto("/");
       const card = toolbox(page);
-      const hidden = card.getByRole("heading", { name: "Game development" });
+      const hidden = card.locator("h3", { hasText: "Game development" });
       await expect(hidden.last()).toBeHidden();
       await card.getByText("Show all skills").click();
       await expect(hidden.last()).toBeVisible();
@@ -45,7 +45,7 @@ test.describe("Toolbox at 700px and up", () => {
     await page.goto("/");
     const card = toolbox(page);
     await expect(
-      card.getByRole("heading", { name: "Game development" }).first(),
+      card.locator("h3", { hasText: "Game development" }).first(),
     ).toBeVisible();
     await expect(card.getByText("Show all skills")).toBeHidden();
   });

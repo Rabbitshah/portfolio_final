@@ -66,7 +66,9 @@ it("CopyEmail: copies the address, says so, then goes back after 1.6 s", async (
   await act(async () => {});
   expect(writeText).toHaveBeenCalledWith("a@b.co");
   expect(screen.getByRole("button", { name: "Copied" })).toBeTruthy();
-  expect(screen.getByRole("status").textContent).toBe("Email copied.");
+  expect(document.querySelector("[aria-live]")?.textContent).toBe(
+    "Email copied.",
+  );
 
   act(() => {
     vi.advanceTimersByTime(1600);
@@ -82,7 +84,9 @@ it("CopyEmail: when the clipboard is blocked, shows the address so it can be cop
   fireEvent.click(screen.getByRole("button", { name: "Copy email" }));
   await act(async () => {});
   expect(screen.getByRole("button", { name: "Copy failed" })).toBeTruthy();
-  expect(screen.getByRole("status").textContent).toContain("a@b.co");
+  expect(document.querySelector("[aria-live]")?.textContent).toContain(
+    "a@b.co",
+  );
 });
 
 it("NowPlaying: is hidden from assistive tech and rotates through the facts", () => {

@@ -47,7 +47,7 @@ export function CopyEmail({
       <Button onClick={copy} className={className}>
         {LABELS[state]}
       </Button>
-      <span role="status" className="sr-only">
+      <span aria-live="polite" className="sr-only">
         {state === "copied"
           ? "Email copied."
           : state === "failed"
