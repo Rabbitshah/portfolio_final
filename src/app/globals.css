@@ -178,6 +178,13 @@
     animation-play-state: paused;
   }
 
+  .eq-bar {
+    width: 2px;
+    height: 3px;
+    background: var(--accent-text);
+    animation: eq 1s ease-in-out infinite;
+  }
+
   /* FAQ plus/minus indicator. The open state comes from the native <details>. */
   .pm {
     position: relative;
@@ -333,6 +340,11 @@
   }
 }
 
+@keyframes eq {
+  50% {
+    height: 12px;
+  }
+}
 @keyframes avail-pulse {
   70% {
     box-shadow: 0 0 0 8px transparent;
