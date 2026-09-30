@@ -1,6 +1,6 @@
 {
   "route": "/",
-  "baselineKb": 157.3,
+  "baselineKb": 157.4,
   "toleranceKb": 2,
   "warnAboveKb": 170,
   "history": [
@@ -18,6 +18,11 @@
       "change": "Phase 3 item 2: marquee pause, status-bar clock, NowPlaying, CopyEmail, Toolbox collapse, eyebrow wrap",
       "beforeKb": 156.1,
       "afterKb": 157.3
+    },
+    {
+      "change": "PR #8 review fixes: marquee flex layout and data-js gate, NowPlaying sizing",
+      "beforeKb": 157.3,
+      "afterKb": 157.4
     }
   ]
 }
