@@ -159,22 +159,27 @@
     display: var(--icon-moon);
   }
 
-  /* Marquee: two identical lists; the second is aria-hidden. Pure CSS. */
+  /* Marquee: a flex row of the track and the pause button, so nothing ever sits under the button. */
   .marquee {
-    position: relative;
     display: flex;
-    overflow: hidden;
+    align-items: center;
     user-select: none;
   }
-  .marquee > ul {
+  .marquee-track {
+    display: flex;
+    flex: 1 1 0;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .marquee-track > ul {
     display: flex;
     flex-shrink: 0;
     min-width: 100%;
     justify-content: space-around;
     animation: marquee-slide 32s linear infinite;
   }
-  .marquee:hover > ul,
-  .marquee > button[aria-pressed="true"] ~ ul {
+  .marquee-track:hover > ul,
+  .marquee:has(> button[aria-pressed="true"]) ul {
     animation-play-state: paused;
   }
 
@@ -359,24 +364,22 @@
   html {
     scroll-behavior: auto;
   }
+  /* The marquee becomes a static, wrapped list and the duplicate is hidden. */
+  .marquee-track {
+    overflow: visible;
+  }
+  .marquee-track > ul {
+    flex-wrap: wrap;
+    animation: none;
+  }
+  .marquee-track > ul[aria-hidden="true"] {
+    display: none;
+  }
   *,
   *::before,
   *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
-  }
-  /* The marquee becomes a static, wrapped list and the duplicate is hidden. */
-  .marquee {
-    overflow: visible;
-  }
-  .marquee > ul {
-    flex-wrap: wrap;
-    animation: none;
-    /* Room for the pause button, which stays present. */
-    padding-right: 4rem;
-  }
-  .marquee > ul[aria-hidden="true"] {
-    display: none;
   }
 }

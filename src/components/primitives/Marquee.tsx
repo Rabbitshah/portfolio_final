@@ -2,9 +2,9 @@ import type { ReactNode } from "react";
 import { MarqueePause } from "@/components/interactive/MarqueePause";
 import { cx } from "@/lib/cx";
 
-// Two identical lists side by side; the second is aria-hidden. Animation is CSS only
-// (see .marquee in globals.css) and becomes a static wrapped list under reduced motion.
-// Each strip has its own pause button (WCAG 2.2.2), placed before the lists so CSS can read it.
+// Two identical lists in a track, with the pause button beside it (not over it). Animation is CSS
+// only (see .marquee in globals.css) and becomes a static wrapped list under reduced motion.
+// Each strip has its own pause button (WCAG 2.2.2).
 export function Marquee({
   label,
   items,
@@ -43,13 +43,15 @@ export function Marquee({
           : "border-y border-line py-[18px]",
       )}
     >
+      <div className="marquee-track">
+        <ul aria-label={label} className={listClass}>
+          {renderItems()}
+        </ul>
+        <ul aria-hidden="true" className={listClass}>
+          {renderItems()}
+        </ul>
+      </div>
       <MarqueePause />
-      <ul aria-label={label} className={listClass}>
-        {renderItems()}
-      </ul>
-      <ul aria-hidden="true" className={listClass}>
-        {renderItems()}
-      </ul>
     </div>
   );
 }

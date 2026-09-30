@@ -27,10 +27,11 @@ it("has a pause button that toggles aria-pressed and its label", () => {
   ).toBe("false");
 });
 
-it("comes before the lists, so CSS can pause them from its state", () => {
+it("sits beside the track, not over it", () => {
   const { container } = render(<Marquee label="Things" items={items} />);
-  const first = container.querySelector(".marquee")?.firstElementChild;
-  expect(first?.tagName).toBe("BUTTON");
+  const marquee = container.querySelector(".marquee");
+  expect(marquee?.firstElementChild?.className).toBe("marquee-track");
+  expect(marquee?.lastElementChild?.tagName).toBe("BUTTON");
 });
 
 it("is not in the server HTML, because it cannot work without JavaScript", () => {

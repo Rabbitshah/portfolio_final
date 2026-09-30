@@ -65,3 +65,26 @@ test.describe("with reduced motion", () => {
     expect(await playStates(page, 0)).toEqual([[], []]);
   });
 });
+
+test.describe("layout", () => {
+  for (const width of [320, 390, 1280]) {
+    test(`the track ends before the button starts, with space after it, at ${width}px`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto("/");
+      await page.waitForLoadState("networkidle");
+      for (const index of [0, 1]) {
+        const strip = strips(page).nth(index);
+        const track = await strip.locator(".marquee-track").boundingBox();
+        const button = await strip.getByRole("button").boundingBox();
+        const box = await strip.boundingBox();
+        if (!track || !button || !box) throw new Error("missing box");
+        expect(track.x + track.width).toBeLessThanOrEqual(button.x);
+        expect(
+          box.x + box.width - (button.x + button.width),
+        ).toBeGreaterThanOrEqual(12);
+      }
+    });
+  }
+});
