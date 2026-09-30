@@ -70,6 +70,10 @@ it("NowPlaying: keeps showing the first fact and never rotates", async () => {
   act(() => {
     vi.advanceTimersByTime(20_000);
   });
-  expect(container.textContent).toContain("one");
-  expect(container.textContent).not.toContain("two");
+  expect(container.querySelector(".grid")?.lastElementChild?.textContent).toBe(
+    "one",
+  );
+  expect(
+    container.querySelector(".grid")?.lastElementChild?.textContent,
+  ).not.toBe("two");
 });

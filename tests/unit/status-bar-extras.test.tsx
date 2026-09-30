@@ -94,14 +94,20 @@ it("NowPlaying: is hidden from assistive tech and rotates through the facts", ()
   vi.spyOn(HTMLElement.prototype, "offsetWidth", "get").mockReturnValue(100);
   const { container } = render(<NowPlaying items={["one", "two"]} />);
   expect(container.firstElementChild?.getAttribute("aria-hidden")).toBe("true");
-  expect(container.textContent).toContain("one");
+  expect(container.querySelector(".grid")?.lastElementChild?.textContent).toBe(
+    "one",
+  );
 
   act(() => {
     vi.advanceTimersByTime(4200 + 300);
   });
-  expect(container.textContent).toContain("two");
+  expect(container.querySelector(".grid")?.lastElementChild?.textContent).toBe(
+    "two",
+  );
   act(() => {
     vi.advanceTimersByTime(4200 + 300);
   });
-  expect(container.textContent).toContain("one");
+  expect(container.querySelector(".grid")?.lastElementChild?.textContent).toBe(
+    "one",
+  );
 });
