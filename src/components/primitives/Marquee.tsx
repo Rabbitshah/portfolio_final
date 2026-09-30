@@ -2,8 +2,9 @@ import type { ReactNode } from "react";
 import { MarqueePause } from "@/components/interactive/MarqueePause";
 import { cx } from "@/lib/cx";
 
-// Two identical lists in a track, with the pause button beside it (not over it). Animation is CSS
-// only (see .marquee in globals.css) and becomes a static wrapped list under reduced motion.
+// Two identical lists in a track, with the pause button beside it (not over it). Motion is CSS only
+// (see .marquee in globals.css) and is off without JavaScript or under reduced motion, where the
+// first list is a static wrapped list and the duplicate is hidden.
 // Each strip has its own pause button (WCAG 2.2.2).
 export function Marquee({
   label,

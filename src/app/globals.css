@@ -159,7 +159,11 @@
     display: var(--icon-moon);
   }
 
-  /* Marquee: a flex row of the track and the pause button, so nothing ever sits under the button. */
+  /* Marquee: a flex row of the track and the pause button, so nothing ever sits under the button.
+     The default is a static, wrapped list (no JavaScript, or reduced motion); the second list is
+     a duplicate for the loop and stays hidden. It only moves when the inline script in <head> has
+     set data-js (see src/lib/jsFlag.ts), so a visitor without JavaScript never gets motion they
+     cannot stop. */
   .marquee {
     display: flex;
     align-items: center;
@@ -169,18 +173,32 @@
     display: flex;
     flex: 1 1 0;
     min-width: 0;
-    overflow: hidden;
   }
   .marquee-track > ul {
     display: flex;
-    flex-shrink: 0;
-    min-width: 100%;
-    justify-content: space-around;
-    animation: marquee-slide 32s linear infinite;
+    flex-wrap: wrap;
   }
-  .marquee-track:hover > ul,
-  .marquee:has(> button[aria-pressed="true"]) ul {
-    animation-play-state: paused;
+  .marquee-track > ul[aria-hidden="true"] {
+    display: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :root[data-js] .marquee-track {
+      overflow: hidden;
+    }
+    :root[data-js] .marquee-track > ul {
+      flex-wrap: nowrap;
+      flex-shrink: 0;
+      min-width: 100%;
+      justify-content: space-around;
+      animation: marquee-slide 32s linear infinite;
+    }
+    :root[data-js] .marquee-track > ul[aria-hidden="true"] {
+      display: flex;
+    }
+    :root[data-js] .marquee-track:hover > ul,
+    :root[data-js] .marquee:has(> button[aria-pressed="true"]) ul {
+      animation-play-state: paused;
+    }
   }
 
   .eq-bar {
@@ -363,17 +381,6 @@
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
-  }
-  /* The marquee becomes a static, wrapped list and the duplicate is hidden. */
-  .marquee-track {
-    overflow: visible;
-  }
-  .marquee-track > ul {
-    flex-wrap: wrap;
-    animation: none;
-  }
-  .marquee-track > ul[aria-hidden="true"] {
-    display: none;
   }
   *,
   *::before,

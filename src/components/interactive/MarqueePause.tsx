@@ -6,8 +6,9 @@ const noop = () => () => {};
 
 // WCAG 2.2.2 (Pause, Stop, Hide): a keyboard and touch way to stop the moving strip.
 // The button is a flex item beside the track, and CSS pauses the lists from its aria-pressed
-// state (see .marquee in globals.css). Only rendered once JavaScript runs, since it cannot work
-// without it; it is present whether or not reduced motion is on.
+// state (see .marquee in globals.css). Only rendered once JavaScript runs; the animation itself
+// also needs JavaScript (data-js), so without it there is nothing to pause. Present whether or
+// not reduced motion is on.
 export function MarqueePause() {
   const hydrated = useSyncExternalStore(
     noop,

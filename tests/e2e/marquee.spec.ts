@@ -88,3 +88,30 @@ test.describe("layout", () => {
     });
   }
 });
+
+test.describe("with JavaScript off", () => {
+  test.use({ javaScriptEnabled: false });
+
+  test("the strips do not move, so there is nothing to pause", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await expect(strips(page)).toHaveCount(2);
+    await expect(page.locator("html")).not.toHaveAttribute("data-js", /.*/);
+    for (const index of [0, 1]) {
+      const strip = strips(page).nth(index);
+      expect(await playStates(page, index)).toEqual([[], []]);
+      await expect(strip.getByRole("button")).toHaveCount(0);
+      // Only the real list shows; the duplicate used for the loop is hidden.
+      await expect(strip.locator("ul").first()).toBeVisible();
+      await expect(strip.locator("ul[aria-hidden='true']")).toBeHidden();
+    }
+  });
+});
+
+test("with JavaScript on, the page is marked so the strips can move", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await expect(page.locator("html")).toHaveAttribute("data-js", "1");
+});
