@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { site } from "@/lib/content";
 import { Button } from "@/components/primitives/Button";
 import { Container } from "@/components/primitives/Container";
@@ -28,7 +29,18 @@ export function Hero() {
         <div className="grid w-full grid-cols-[minmax(0,1fr)] items-center gap-10 min-[700px]:grid-cols-[minmax(0,1.15fr)_minmax(0,.85fr)] min-[700px]:gap-[clamp(24px,5vw,72px)]">
           <div>
             <p className="mb-7 inline-flex items-center gap-2.5 font-mono text-[.78rem] uppercase tracking-[.04em] text-muted before:h-px before:w-7 before:bg-line-strong before:content-['']">
-              {site.eyebrow}
+              <span>
+                {/* Phrases never split, so a narrow screen wraps at the "·" and not inside one. */}
+                {site.eyebrow.split(" · ").map((phrase, index, all) => (
+                  <Fragment key={phrase}>
+                    {index > 0 && " "}
+                    <span className="whitespace-nowrap">
+                      {phrase}
+                      {index < all.length - 1 && " ·"}
+                    </span>
+                  </Fragment>
+                ))}
+              </span>
             </p>
             <h1
               id="hero-title"
