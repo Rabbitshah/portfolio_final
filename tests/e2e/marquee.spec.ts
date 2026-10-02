@@ -52,17 +52,30 @@ test.describe("with motion allowed", () => {
 test.describe("with reduced motion", () => {
   test.use({ reducedMotion: "reduce" });
 
-  test("the control is still there and still toggles, over a strip that does not move", async ({
+  test("there is no pause control: nothing moves, so there is nothing to pause", async ({
     page,
   }) => {
     await page.goto("/");
     await page.waitForLoadState("networkidle");
-    const button = strips(page).nth(0).getByRole("button");
-    await expect(button).toBeVisible();
-    await button.focus();
-    await page.keyboard.press("Enter");
-    await expect(button).toHaveAttribute("aria-pressed", "true");
-    expect(await playStates(page, 0)).toEqual([[], []]);
+    for (const index of [0, 1]) {
+      const strip = strips(page).nth(index);
+      const button = strip.locator("button");
+      // React rendered it, so this is not vacuous; CSS hides it.
+      await expect(button).toHaveCount(1);
+      await expect(button).toBeHidden();
+      // Not in the accessibility tree.
+      await expect(
+        strip.getByRole("button", { name: /scrolling text/ }),
+      ).toHaveCount(0);
+      // Not focusable, so not in the tab order.
+      expect(
+        await button.evaluate((el) => {
+          el.focus();
+          return document.activeElement === el;
+        }),
+      ).toBe(false);
+      expect(await playStates(page, index)).toEqual([[], []]);
+    }
   });
 });
 

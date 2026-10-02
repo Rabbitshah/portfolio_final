@@ -34,6 +34,10 @@ const measure = (page: Page, index: number) =>
       });
       return {
         boxes,
+        stripWidth: strip.getBoundingClientRect().width,
+        trackWidth: (
+          strip.querySelector(".marquee-track") as Element
+        ).getBoundingClientRect().width,
         clipped: items.map((item) => item.scrollWidth > item.clientWidth),
         animations: strip.getAnimations({ subtree: true }).length,
         duplicateDisplay: getComputedStyle(
@@ -57,6 +61,8 @@ async function checkStatic(page: Page, width: number) {
     expect(m.animations, `${label}: not moving`).toBe(0);
     expect(m.duplicateDisplay, `${label}: loop copy hidden`).toBe("none");
     expect(m.boxes.length, label).toBeGreaterThan(1);
+    // No room is kept for a pause button: the track takes the whole strip.
+    expect(m.trackWidth, `${label}: track width`).toBeCloseTo(m.stripWidth, 0);
 
     // First item starts where the page content starts.
     const leftmost = Math.min(...m.boxes.map((b) => b.left));
