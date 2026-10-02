@@ -1,6 +1,6 @@
 {
   "route": "/",
-  "baselineKb": 157.4,
+  "baselineKb": 157,
   "toleranceKb": 2,
   "warnAboveKb": 170,
   "history": [
@@ -23,6 +23,11 @@
       "change": "PR #8 review fixes: marquee flex layout and data-js gate, NowPlaying sizing",
       "beforeKb": 157.3,
       "afterKb": 157.4
+    },
+    {
+      "change": "PR #8 round 4: NowPlaying rotation removed, so the chip is a Server Component with no client JS",
+      "beforeKb": 157.4,
+      "afterKb": 157
     }
   ]
 }
