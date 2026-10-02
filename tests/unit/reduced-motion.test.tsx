@@ -61,19 +61,3 @@ it("Reveal never hides its content", () => {
   expect((container.firstElementChild as HTMLElement).style.opacity).toBe("");
   expect(observe).not.toHaveBeenCalled();
 });
-
-it("NowPlaying: keeps showing the first fact and never rotates", async () => {
-  vi.useFakeTimers();
-  vi.spyOn(HTMLElement.prototype, "offsetWidth", "get").mockReturnValue(100);
-  const { NowPlaying } = await import("@/components/interactive/NowPlaying");
-  const { container } = render(<NowPlaying items={["one", "two"]} />);
-  act(() => {
-    vi.advanceTimersByTime(20_000);
-  });
-  expect(container.querySelector(".grid")?.lastElementChild?.textContent).toBe(
-    "one",
-  );
-  expect(
-    container.querySelector(".grid")?.lastElementChild?.textContent,
-  ).not.toBe("two");
-});

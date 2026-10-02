@@ -89,25 +89,11 @@ it("CopyEmail: when the clipboard is blocked, shows the address so it can be cop
   );
 });
 
-it("NowPlaying: is hidden from assistive tech and rotates through the facts", () => {
-  vi.useFakeTimers();
-  vi.spyOn(HTMLElement.prototype, "offsetWidth", "get").mockReturnValue(100);
-  const { container } = render(<NowPlaying items={["one", "two"]} />);
-  expect(container.firstElementChild?.getAttribute("aria-hidden")).toBe("true");
-  expect(container.querySelector(".grid")?.lastElementChild?.textContent).toBe(
-    "one",
+it("NowPlaying: one fixed fact, hidden from assistive tech, rendered on the server", () => {
+  const html = renderToString(
+    <NowPlaying fact="published: ieee icscds-2025" />,
   );
-
-  act(() => {
-    vi.advanceTimersByTime(4200 + 300);
-  });
-  expect(container.querySelector(".grid")?.lastElementChild?.textContent).toBe(
-    "two",
-  );
-  act(() => {
-    vi.advanceTimersByTime(4200 + 300);
-  });
-  expect(container.querySelector(".grid")?.lastElementChild?.textContent).toBe(
-    "one",
-  );
+  expect(html).toContain("published: ieee icscds-2025");
+  expect(html).toContain('aria-hidden="true"');
+  expect(html.match(/class="eq-bar/g)).toHaveLength(3);
 });

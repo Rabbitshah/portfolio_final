@@ -235,7 +235,9 @@
     width: 2px;
     height: 3px;
     background: var(--accent-text);
-    animation: eq 1s ease-in-out infinite;
+    /* Plays 3 times, then rests at 3px. Longest delay (.4s, set in NowPlaying) + 1s x 3 = 3.4s,
+       under the 5s limit of WCAG 2.2.2. Keep the total at 4s or less; a test checks it. */
+    animation: eq 1s ease-in-out 3;
   }
 
   /* FAQ plus/minus indicator. The open state comes from the native <details>. */

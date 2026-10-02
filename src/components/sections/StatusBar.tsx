@@ -24,7 +24,7 @@ export function StatusBar() {
           ))}
         </ul>
       </nav>
-      <NowPlaying items={site.nowPlaying} />
+      <NowPlaying fact={site.nowPlaying} />
       <div className="flex items-center gap-2">
         {site.availability.open && (
           <span className="hidden items-center gap-2 whitespace-nowrap pr-1.5 font-mono text-[.72rem] text-muted min-[1100px]:flex">
