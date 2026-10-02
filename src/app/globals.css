@@ -195,11 +195,19 @@
   .marquee-track > ul[aria-hidden="true"] {
     display: none;
   }
+  /* Nothing moves in the static state, so there is nothing to pause: the pause button is not
+     shown, not focusable and not in the accessibility tree (display: none). */
+  .marquee-pause {
+    display: none;
+  }
   /* Moving state: full width, items spaced by their own margin or padding for the seamless loop. */
   @media (prefers-reduced-motion: no-preference) {
     :root[data-js] .marquee-track {
       overflow: hidden;
       padding-inline: 0;
+    }
+    :root[data-js] .marquee-pause {
+      display: grid;
     }
     :root[data-js] .marquee-item-card {
       margin-right: 0.75rem;
