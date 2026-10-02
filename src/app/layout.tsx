@@ -9,6 +9,7 @@ import { StatusBar } from "@/components/sections/StatusBar";
 import { env } from "@/env";
 import { site } from "@/lib/content";
 import { buildMetadata, resolveSiteUrl } from "@/lib/seo";
+import { jsFlagScript } from "@/lib/jsFlag";
 import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
 
@@ -40,7 +41,7 @@ export const metadata: Metadata = buildMetadata(
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    // suppressHydrationWarning: the inline script sets data-theme before React hydrates.
+    // suppressHydrationWarning: the inline scripts set data-theme and data-js before React hydrates.
     <html
       lang="en"
       suppressHydrationWarning
@@ -48,6 +49,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <script dangerouslySetInnerHTML={{ __html: jsFlagScript }} />
       </head>
       <body>
         <StatusBar />

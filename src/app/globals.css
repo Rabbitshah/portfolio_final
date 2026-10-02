@@ -159,21 +159,93 @@
     display: var(--icon-moon);
   }
 
-  /* Marquee: two identical lists; the second is aria-hidden. Pure CSS. */
+  /* Marquee: a flex row of the track and the pause button, so nothing ever sits under the button.
+     The default is a static, wrapped list (no JavaScript, or reduced motion); the second list is
+     a duplicate for the loop and stays hidden. It only moves when the inline script in <head> has
+     set data-js (see src/lib/jsFlag.ts), so a visitor without JavaScript never gets motion they
+     cannot stop. */
   .marquee {
     display: flex;
-    overflow: hidden;
+    align-items: center;
     user-select: none;
   }
-  .marquee > ul {
+  /* Static state (no JavaScript, or reduced motion): a wrapped list that lines up with the page
+     content. The side padding mirrors <Container> (75rem max width, clamp(20px, 4vw, 40px) gutter,
+     safe-area insets), so keep the two in step. The gap is gap-y-3 gap-x-8, the same x-spacing as
+     the Toolbox. Separators are hidden here, because items wrap at different places and a
+     separator at the end of each row would sit ragged. */
+  .marquee-track {
     display: flex;
-    flex-shrink: 0;
-    min-width: 100%;
-    justify-content: space-around;
-    animation: marquee-slide 32s linear infinite;
+    flex: 1 1 0;
+    min-width: 0;
+    padding-left: calc(
+      max(0px, (100% - 75rem) / 2) +
+        max(clamp(20px, 4vw, 40px), env(safe-area-inset-left, 0px))
+    );
+    padding-right: calc(
+      max(0px, (100% - 75rem) / 2) +
+        max(clamp(20px, 4vw, 40px), env(safe-area-inset-right, 0px))
+    );
   }
-  .marquee:hover > ul {
-    animation-play-state: paused;
+  .marquee-track > ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 2rem;
+  }
+  .marquee-track > ul[aria-hidden="true"] {
+    display: none;
+  }
+  /* Nothing moves in the static state, so there is nothing to pause: the pause button is not
+     shown, not focusable and not in the accessibility tree (display: none). */
+  .marquee-pause {
+    display: none;
+  }
+  /* Moving state: full width, items spaced by their own margin or padding for the seamless loop. */
+  @media (prefers-reduced-motion: no-preference) {
+    :root[data-js] .marquee-track {
+      overflow: hidden;
+      padding-inline: 0;
+    }
+    :root[data-js] .marquee-pause {
+      display: grid;
+    }
+    :root[data-js] .marquee-item-card {
+      margin-right: 0.75rem;
+    }
+    :root[data-js] .marquee-item-word {
+      padding-inline: 26px;
+    }
+    :root[data-js] .marquee-item-word::after {
+      content: "✦";
+      margin-left: 52px;
+      font-family: var(--font-sans);
+      font-size: 0.7em;
+      color: var(--accent-text);
+    }
+    :root[data-js] .marquee-track > ul {
+      gap: 0;
+      flex-wrap: nowrap;
+      flex-shrink: 0;
+      min-width: 100%;
+      justify-content: space-around;
+      animation: marquee-slide 32s linear infinite;
+    }
+    :root[data-js] .marquee-track > ul[aria-hidden="true"] {
+      display: flex;
+    }
+    :root[data-js] .marquee-track:hover > ul,
+    :root[data-js] .marquee:has(> button[aria-pressed="true"]) ul {
+      animation-play-state: paused;
+    }
+  }
+
+  .eq-bar {
+    width: 2px;
+    height: 3px;
+    background: var(--accent-text);
+    /* Plays 3 times, then rests at 3px. Longest delay (.4s, set in NowPlaying) + 1s x 3 = 3.4s,
+       under the 5s limit of WCAG 2.2.2. Keep the total at 4s or less; a test checks it. */
+    animation: eq 1s ease-in-out 3;
   }
 
   /* FAQ plus/minus indicator. The open state comes from the native <details>. */
@@ -331,6 +403,11 @@
   }
 }
 
+@keyframes eq {
+  50% {
+    height: 12px;
+  }
+}
 @keyframes avail-pulse {
   70% {
     box-shadow: 0 0 0 8px transparent;
@@ -351,16 +428,5 @@
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
-  }
-  /* The marquee becomes a static, wrapped list and the duplicate is hidden. */
-  .marquee {
-    overflow: visible;
-  }
-  .marquee > ul {
-    flex-wrap: wrap;
-    animation: none;
-  }
-  .marquee > ul[aria-hidden="true"] {
-    display: none;
   }
 }

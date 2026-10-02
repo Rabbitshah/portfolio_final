@@ -31,7 +31,7 @@ Not used unless I ask: Redux, MUI, GSAP, Lenis, Three.js/R3F, Prisma, Firebase.
 - **Progressive enhancement:** all content renders and is readable with JS disabled. Reveal animations must never hide content if JS fails.
 - **Pointer capability:** cursor ring, magnetic buttons, drag, tilt, spotlight, doodle mode only when `(hover: hover) and (pointer: fine)`. On touch: no `touch-action: none` on scrollable areas, window traffic-light buttons disabled and `aria-hidden`.
 - **Responsive contract:** no horizontal scroll at 320, 360, 390, 430, 600, 768, 844×390, 1024, 1180, 1280, 1440, 1920, 2560 px wide. Tap targets ≥ 44 px on touch. Text ≥ 11.5 px. Grid columns use `minmax(0, 1fr)`. Breakpoint behavior is in PLAN.md §9.
-- **Performance:** LCP < 2.5 s, CLS < 0.1, INP < 200 ms on mobile. Set and enforce a first-load JS budget (proposed: ≤ 150 KB gzipped for `/`, adjust after measuring).
+- **Performance:** LCP < 2.5 s, CLS < 0.1, INP < 200 ms on mobile. First-load JS for `/` is tracked in `bundle-budget.json`: the e2e test fails if it grows more than `toleranceKb` over `baselineKb`, and warns above `warnAboveKb` (170 KB gzipped). A deliberate increase is committed as a new baseline, with a `history` entry, in the same PR.
 - **Privacy:** never publish my phone number. Do not log message bodies or chat questions in analytics. Hash IPs before storing.
 
 ## Definition of done (run all, paste results)

@@ -37,7 +37,7 @@ export interface Site {
   availability: { open: boolean; label: string };
   nav: NavItem[];
   menu: NavItem[];
-  nowPlaying: string[];
+  nowPlaying: string;
   education: Education[];
 }
 
@@ -101,15 +101,8 @@ export const site: Site = {
     { label: "Contact", href: "/#contact" },
   ],
 
-  // Rotating facts in the bar (desktop, 1320px and up). Keep every line true.
-  // TODO(content): confirm "latest project".
-  nowPlaying: [
-    "latest project: sustainability tracker",
-    "published: ieee icscds-2025",
-    "stack: django · fastapi · next.js",
-    "timezone: ist, utc+5:30",
-    "latest paper: ijcrt, dec 2025",
-  ],
+  // The one fixed fact in the bar chip (desktop, 1320px and up). Keep it true.
+  nowPlaying: "published: ieee icscds-2025",
 
   education: [
     {

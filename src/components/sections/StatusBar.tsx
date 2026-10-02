@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { site } from "@/lib/content";
 import { MobileMenu } from "@/components/interactive/MobileMenu";
+import { NowPlaying } from "@/components/interactive/NowPlaying";
 import { ThemeToggle } from "@/components/interactive/ThemeToggle";
 import { BarPill } from "@/components/primitives/BarPill";
 import { Brand } from "./Brand";
@@ -23,6 +24,7 @@ export function StatusBar() {
           ))}
         </ul>
       </nav>
+      <NowPlaying fact={site.nowPlaying} />
       <div className="flex items-center gap-2">
         {site.availability.open && (
           <span className="hidden items-center gap-2 whitespace-nowrap pr-1.5 font-mono text-[.72rem] text-muted min-[1100px]:flex">
