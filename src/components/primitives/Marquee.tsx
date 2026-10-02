@@ -23,8 +23,8 @@ export function Marquee({
         key={item.key}
         className={
           receipts
-            ? "mr-3 block rounded-[14px] border border-line bg-card px-5 py-3.5 text-[.9rem] leading-[1.35] text-muted"
-            : "flex items-center whitespace-nowrap px-[26px] font-serif text-[clamp(1.4rem,2.6vw,2rem)] leading-none after:ml-[52px] after:font-sans after:text-[.7em] after:text-accent-text after:content-['✦']"
+            ? "marquee-item-card block rounded-[14px] border border-line bg-card px-5 py-3.5 text-[.9rem] leading-[1.35] text-muted"
+            : "marquee-item-word flex items-center whitespace-nowrap font-serif text-[clamp(1.4rem,2.6vw,2rem)] leading-none"
         }
       >
         {item.content}

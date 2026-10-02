@@ -169,23 +169,53 @@
     align-items: center;
     user-select: none;
   }
+  /* Static state (no JavaScript, or reduced motion): a wrapped list that lines up with the page
+     content. The side padding mirrors <Container> (75rem max width, clamp(20px, 4vw, 40px) gutter,
+     safe-area insets), so keep the two in step. The gap is gap-y-3 gap-x-8, the same x-spacing as
+     the Toolbox. Separators are hidden here, because items wrap at different places and a
+     separator at the end of each row would sit ragged. */
   .marquee-track {
     display: flex;
     flex: 1 1 0;
     min-width: 0;
+    padding-left: calc(
+      max(0px, (100% - 75rem) / 2) +
+        max(clamp(20px, 4vw, 40px), env(safe-area-inset-left, 0px))
+    );
+    padding-right: calc(
+      max(0px, (100% - 75rem) / 2) +
+        max(clamp(20px, 4vw, 40px), env(safe-area-inset-right, 0px))
+    );
   }
   .marquee-track > ul {
     display: flex;
     flex-wrap: wrap;
+    gap: 0.75rem 2rem;
   }
   .marquee-track > ul[aria-hidden="true"] {
     display: none;
   }
+  /* Moving state: full width, items spaced by their own margin or padding for the seamless loop. */
   @media (prefers-reduced-motion: no-preference) {
     :root[data-js] .marquee-track {
       overflow: hidden;
+      padding-inline: 0;
+    }
+    :root[data-js] .marquee-item-card {
+      margin-right: 0.75rem;
+    }
+    :root[data-js] .marquee-item-word {
+      padding-inline: 26px;
+    }
+    :root[data-js] .marquee-item-word::after {
+      content: "✦";
+      margin-left: 52px;
+      font-family: var(--font-sans);
+      font-size: 0.7em;
+      color: var(--accent-text);
     }
     :root[data-js] .marquee-track > ul {
+      gap: 0;
       flex-wrap: nowrap;
       flex-shrink: 0;
       min-width: 100%;
