@@ -2,6 +2,7 @@ import { Fragment } from "react";
 import { site } from "@/lib/content";
 import { Button } from "@/components/primitives/Button";
 import { Container } from "@/components/primitives/Container";
+import { TrafficLights } from "@/components/primitives/TrafficLights";
 import { cx } from "@/lib/cx";
 import { headlineUnits, type HeadlineWord } from "@/lib/headline";
 import { Cube } from "./Cube";
@@ -90,7 +91,17 @@ export function Hero() {
     >
       <Container>
         <div className="grid w-full grid-cols-[minmax(0,1fr)] items-center gap-10 min-[700px]:grid-cols-[minmax(0,1.15fr)_minmax(0,.85fr)] min-[700px]:gap-[clamp(24px,5vw,72px)]">
-          <div>
+          <div className="relative">
+            {/* "Lights out": three dots just above the eyebrow, in space the hero already has, so
+                they take no room and shift nothing. Hidden by default, so it is only ever seen
+                while the intro runs (see .gantry in globals.css). Placed before the eyebrow:
+                tests find the eyebrow as the element right before the h1. */}
+            <div
+              aria-hidden="true"
+              className="gantry pointer-events-none absolute bottom-full left-0 mb-2 opacity-0 [@media(max-height:500px)_and_(orientation:landscape)]:hidden"
+            >
+              <TrafficLights />
+            </div>
             <p className="mb-7 inline-flex items-center gap-2.5 font-mono text-[.78rem] uppercase tracking-[.04em] text-muted before:h-px before:w-7 before:bg-line-strong before:content-['']">
               <span>
                 {/* Phrases never split, so a narrow screen wraps at the "·" and not inside one. */}
