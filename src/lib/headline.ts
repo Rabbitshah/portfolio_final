@@ -38,3 +38,42 @@ export function headlineWords(
     };
   });
 }
+
+export type HeadlineSegment = { text: string; emphasized: boolean };
+/** One whitespace-free word, in pieces by emphasis: "ship," is [ship (emphasized), "," (plain)]. */
+export type HeadlineWord = HeadlineSegment[];
+/**
+ * Either one word, or a run of words that are all emphasized (`phrase`), such as "hold up.",
+ * which has to stay together on one line. Two emphasized phrases with only a space between
+ * them would merge into one unit; the current headline has none.
+ */
+export type HeadlineUnit = { phrase: boolean; words: HeadlineWord[] };
+
+/** The headline as words, grouped into units. Joined with single spaces, the words equal the text. */
+export function headlineUnits(text: string): HeadlineUnit[] {
+  const words: HeadlineWord[] = [];
+  let current: HeadlineWord | null = null;
+  for (const run of splitHeadline(text)) {
+    for (const char of run.text) {
+      if (/\s/.test(char)) {
+        current = null;
+        continue;
+      }
+      if (!current) {
+        current = [];
+        words.push(current);
+      }
+      const last = current[current.length - 1];
+      if (last && last.emphasized === run.emphasized) last.text += char;
+      else current.push({ text: char, emphasized: run.emphasized });
+    }
+  }
+  const units: HeadlineUnit[] = [];
+  for (const word of words) {
+    const allEmphasized = word.every((segment) => segment.emphasized);
+    const previous = units[units.length - 1];
+    if (allEmphasized && previous?.phrase) previous.words.push(word);
+    else units.push({ phrase: allEmphasized, words: [word] });
+  }
+  return units;
+}

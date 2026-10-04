@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { site } from "@/lib/content";
-import { headlineWords, splitHeadline } from "@/lib/headline";
+import { headlineUnits, headlineWords, splitHeadline } from "@/lib/headline";
 import {
   buildMetadata,
   buildRobots,
@@ -153,5 +153,28 @@ describe("headline helpers", () => {
     expect(
       words.filter((entry) => entry.emphasized).map((entry) => entry.word),
     ).toEqual(["ship,", "hold", "up."]);
+  });
+
+  it("headlineUnits: words joined by a space equal the headline", () => {
+    const units = headlineUnits(site.headline);
+    const words = units.flatMap((unit) =>
+      unit.words.map((word) => word.map((segment) => segment.text).join("")),
+    );
+    expect(words.join(" ")).toBe(site.headline);
+  });
+
+  it('headlineUnits: the comma stays with its word, plain, and "hold up." is one phrase', () => {
+    const units = headlineUnits(site.headline);
+    const ship = units.find((unit) => unit.words[0]?.[0]?.text === "ship");
+    expect(ship?.phrase).toBe(false);
+    expect(ship?.words[0]).toEqual([
+      { text: "ship", emphasized: true },
+      { text: ",", emphasized: false },
+    ]);
+    const phrase = units.find((unit) => unit.phrase);
+    expect(
+      phrase?.words.map((word) => word.map((segment) => segment.text).join("")),
+    ).toEqual(["hold", "up."]);
+    expect(units.filter((unit) => unit.phrase)).toHaveLength(1);
   });
 });
