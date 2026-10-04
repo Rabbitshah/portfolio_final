@@ -10,6 +10,20 @@ const chip = (page: Page) =>
   page.locator('div[aria-hidden="true"]:has(.eq-bar)');
 const bars = (page: Page) => chip(page).locator(".eq-bar");
 
+// Where the bars come to rest: three different heights (4 / 12 / 8 px), so they read as an
+// equalizer icon and not as an ellipsis.
+const REST_HEIGHTS = [4, 12, 8];
+
+const barHeights = (page: Page) =>
+  bars(page).evaluateAll((els) =>
+    els.map((el) => el.getBoundingClientRect().height),
+  );
+
+function expectRestShape(heights: number[], when: string) {
+  expect(new Set(heights).size, `${when}: heights must differ`).toBe(3);
+  expect(heights, `${when}: rest shape`).toEqual(REST_HEIGHTS);
+}
+
 const seconds = (value: string) =>
   value.endsWith("ms") ? parseFloat(value) / 1000 : parseFloat(value);
 
@@ -89,11 +103,31 @@ for (const javaScriptEnabled of [true, false]) {
       await page.waitForTimeout(10_000);
 
       expect(await running(), "bars still animating after 10 s").toBe(0);
-      const heights = await bars(page).evaluateAll((els) =>
-        els.map((el) => el.getBoundingClientRect().height),
-      );
-      expect(heights).toEqual([3, 3, 3]);
+      expectRestShape(await barHeights(page), "after 10 s");
       await expect(fact).toHaveText(FACT);
     });
   });
 }
+
+test.describe("with reduced motion", () => {
+  test.use({ reducedMotion: "reduce" });
+
+  test("the bars are at their rest shape at load, and nothing is running once the delays pass", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 800 });
+    await page.goto("/");
+    await expect(chip(page)).toBeVisible();
+    expectRestShape(await barHeights(page), "at load");
+    // The 0.2 s and 0.4 s delays still count down, but each animation lasts about a microsecond.
+    await page.waitForTimeout(700);
+    const running = await bars(page).evaluateAll(
+      (els) =>
+        els
+          .flatMap((el) => el.getAnimations())
+          .filter((animation) => animation.playState === "running").length,
+    );
+    expect(running).toBe(0);
+    expectRestShape(await barHeights(page), "after the delays");
+  });
+});
