@@ -180,20 +180,6 @@ for (const colorScheme of ["light", "dark"] as const) {
       await page.emulateMedia({ colorScheme });
       await page.setViewportSize({ width, height: 900 });
       await page.goto("/");
-      // The hero intro starts the headline words at 35% opacity for a moment. Audit the page once
-      // the intro is over, which is the state that stays on screen.
-      await page.waitForFunction(
-        () =>
-          !document
-            .getAnimations()
-            .some(
-              (animation) =>
-                animation.playState !== "finished" &&
-                (animation.effect as KeyframeEffect | null)?.target?.closest(
-                  ".gantry, h1",
-                ),
-            ),
-      );
       const { violations } = await new AxeBuilder({ page }).analyze();
       const blocking = violations.filter(
         (v) => v.impact === "serious" || v.impact === "critical",
