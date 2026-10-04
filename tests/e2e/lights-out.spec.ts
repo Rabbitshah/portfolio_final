@@ -41,6 +41,30 @@ async function trackStarts(page: Page) {
   };
 }
 
+// Pauses every intro animation at its first start (call before page.goto), so a test can then put
+// them at any moment with freezeIntroAt(). Words and dots are still at their "from" state at 0 ms.
+const pauseIntroOnStart = (page: Page) =>
+  page.addInitScript(() => {
+    document.addEventListener(
+      "animationstart",
+      () => document.getAnimations().forEach((animation) => animation.pause()),
+      { capture: true, once: true },
+    );
+  });
+const freezeIntroAt = (page: Page, time: number) =>
+  page.evaluate((time) => {
+    for (const animation of document.getAnimations()) {
+      if (
+        (animation.effect as KeyframeEffect | null)?.target?.closest(
+          ".gantry, h1",
+        )
+      ) {
+        animation.pause();
+        animation.currentTime = time;
+      }
+    }
+  }, time);
+
 const words = (page: Page) => page.locator("h1 .hero-word");
 const gantry = (page: Page) => page.locator(".gantry");
 
@@ -547,6 +571,60 @@ test.describe("the headline", () => {
     expect(copied.split("I build").length - 1, "headline appears once").toBe(1);
   });
 });
+
+// ---------------------------------------------------------------- the words never fade or crowd
+
+// Transform only: the headline keeps full opacity, and so full contrast, at every moment.
+test("every headline word has opacity 1 from the very first frame to the last", async ({
+  page,
+}) => {
+  await pauseIntroOnStart(page);
+  await page.goto("/");
+  for (const time of [0, 200, 400, 500, 800]) {
+    await freezeIntroAt(page, time);
+    const opacities = await page.evaluate(() =>
+      [...document.querySelectorAll("h1 .hero-word")].map(
+        (el) => getComputedStyle(el).opacity,
+      ),
+    );
+    expect(opacities, `at ${time} ms`).toEqual(
+      Array.from({ length: WORD_COUNT }, () => "1"),
+    );
+  }
+});
+
+// At its lowest point (0 ms) the sliding headline must stay clear of the paragraph below it.
+const MIN_GAP_PX = 8;
+for (const [width, height] of [
+  [390, 844],
+  [1440, 900],
+  [1920, 1080],
+] as [number, number][]) {
+  test(`the sliding words stay at least ${MIN_GAP_PX}px above the intro paragraph at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height });
+    await pauseIntroOnStart(page);
+    await page.goto("/");
+    await freezeIntroAt(page, 0);
+    const measured = await page.evaluate(() => {
+      const h1 = document.querySelector("h1") as HTMLElement;
+      const paragraph = h1.nextElementSibling as HTMLElement;
+      const top = paragraph.getBoundingClientRect().top;
+      const gaps = [...h1.querySelectorAll(".hero-word")].map(
+        // getBoundingClientRect includes the transform: this is where the word really is.
+        (word) => top - word.getBoundingClientRect().bottom,
+      );
+      return { gaps, lowest: Math.min(...gaps) };
+    });
+    expect(
+      measured.lowest,
+      `smallest gap ${measured.lowest.toFixed(1)}px (per word: ${measured.gaps
+        .map((gap) => gap.toFixed(1))
+        .join(", ")})`,
+    ).toBeGreaterThanOrEqual(MIN_GAP_PX);
+  });
+}
 
 // ---------------------------------------------------------------- back and forward
 
