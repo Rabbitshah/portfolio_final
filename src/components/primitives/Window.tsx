@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { cx } from "@/lib/cx";
+import { TrafficLights } from "./TrafficLights";
 
 // How tall the screen area is: a fixed height for mock visuals, a 16:9 frame for images.
 const screenFrames = {
@@ -33,11 +34,7 @@ export function Window({
     <div className={cx("min-w-0", className)}>
       <article className="relative flex h-full flex-col overflow-hidden rounded-[20px] border border-line bg-card transition-colors hover:border-line-strong">
         <header className="flex select-none items-center gap-3.5 border-b border-line px-4 py-3 font-mono text-[.76rem] text-muted">
-          <span className="flex gap-[7px]" aria-hidden="true">
-            <i className="block size-[11px] shrink-0 rounded-full bg-tl-close" />
-            <i className="block size-[11px] shrink-0 rounded-full bg-tl-min" />
-            <i className="block size-[11px] shrink-0 rounded-full bg-tl-zoom" />
-          </span>
+          <TrafficLights />
           <span className="min-w-0 flex-1 truncate">{title}</span>
           {meta && <span className="shrink-0">{meta}</span>}
         </header>
