@@ -2,6 +2,7 @@ import { contactCopy, site } from "@/lib/content";
 import { Button } from "@/components/primitives/Button";
 import { Container } from "@/components/primitives/Container";
 import { ContactForm } from "@/components/interactive/ContactForm";
+import { CopyEmail } from "@/components/interactive/CopyEmail";
 
 const primaryCta = "max-[559px]:basis-full max-[559px]:justify-center";
 const otherCta =
@@ -35,6 +36,7 @@ export function Contact() {
           >
             {site.contact.email}
           </Button>
+          <CopyEmail email={site.contact.email} className={otherCta} />
           <Button href={site.links.github} external className={otherCta}>
             GitHub ↗
           </Button>

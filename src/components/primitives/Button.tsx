@@ -9,7 +9,12 @@ type ButtonProps = {
   children: ReactNode;
 } & (
   | { href: string; external?: boolean }
-  | { href?: undefined; type?: "button" | "submit"; disabled?: boolean }
+  | {
+      href?: undefined;
+      type?: "button" | "submit";
+      disabled?: boolean;
+      onClick?: () => void;
+    }
 );
 
 const base =
@@ -53,6 +58,7 @@ export function Button(props: ButtonProps) {
       <button
         type={props.type ?? "button"}
         disabled={props.disabled}
+        onClick={props.onClick}
         className={cx(classes, props.disabled && "opacity-50")}
       >
         {content}

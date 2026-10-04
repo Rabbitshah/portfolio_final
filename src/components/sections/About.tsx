@@ -5,6 +5,7 @@ import {
   visibleProjects,
   site,
   skillGroups,
+  type SkillGroup,
 } from "@/lib/content";
 import type { ReactNode } from "react";
 import { Card } from "@/components/primitives/Card";
@@ -26,6 +27,24 @@ const seven = "col-span-12 min-[700px]:col-span-6 min-[980px]:col-span-7";
 const five = "col-span-12 min-[700px]:col-span-6 min-[980px]:col-span-5";
 const four = "col-span-12 min-[700px]:col-span-6 min-[980px]:col-span-4";
 const fourAlone = "col-span-12 min-[980px]:col-span-4";
+
+// Below 700px the Toolbox shows this many groups, and the rest open from a "Show all skills" toggle.
+const COLLAPSED_GROUPS = 3;
+
+function SkillGroupList({ group }: { group: SkillGroup }) {
+  return (
+    <div>
+      <h3 className={mono}>{group.category}</h3>
+      <ul className="mt-2.5 flex flex-wrap gap-2">
+        {group.items.map((item) => (
+          <li key={item}>
+            <Chip>{item}</Chip>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 function Facts({ rows }: { rows: [string, ReactNode][] }) {
   return (
@@ -156,19 +175,35 @@ export function About() {
         <Card as="article" className="col-span-12">
           <span className={mono}>Toolbox</span>
           <div className="mt-4 grid grid-cols-1 gap-x-8 gap-y-6 min-[700px]:grid-cols-2 min-[980px]:grid-cols-3">
-            {skillGroups.map((group) => (
-              <div key={group.category}>
-                <h3 className={mono}>{group.category}</h3>
-                <ul className="mt-2.5 flex flex-wrap gap-2">
-                  {group.items.map((item) => (
-                    <li key={item}>
-                      <Chip>{item}</Chip>
-                    </li>
-                  ))}
-                </ul>
+            {skillGroups.slice(0, COLLAPSED_GROUPS).map((group) => (
+              <SkillGroupList key={group.category} group={group} />
+            ))}
+            {/* From 700px every group shows in the grid. Below that, the rest sit behind a native <details>, which works without JavaScript. */}
+            {skillGroups.slice(COLLAPSED_GROUPS).map((group) => (
+              <div key={group.category} className="max-[699px]:hidden">
+                <SkillGroupList group={group} />
               </div>
             ))}
           </div>
+          <details className="group mt-6 min-[700px]:hidden">
+            <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 font-mono text-[.78rem] uppercase tracking-[.04em] text-ink [&::-webkit-details-marker]:hidden">
+              <span className="group-open:hidden">Show all skills</span>
+              <span className="hidden group-open:inline">
+                Show fewer skills
+              </span>
+              <span
+                aria-hidden="true"
+                className="transition-transform group-open:rotate-180"
+              >
+                ↓
+              </span>
+            </summary>
+            <div className="mt-4 grid grid-cols-1 gap-y-6">
+              {skillGroups.slice(COLLAPSED_GROUPS).map((group) => (
+                <SkillGroupList key={group.category} group={group} />
+              ))}
+            </div>
+          </details>
         </Card>
       </div>
     </Section>

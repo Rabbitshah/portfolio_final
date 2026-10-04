@@ -111,7 +111,7 @@ export const siteSchema: z.ZodType<Site> = z.strictObject({
   availability: z.strictObject({ open: z.boolean(), label: text }),
   nav: z.array(z.strictObject({ label: text, href: navHref })).min(1),
   menu: z.array(z.strictObject({ label: text, href: navHref })).min(1),
-  nowPlaying: z.array(text),
+  nowPlaying: text,
   education: z.array(
     z.strictObject({
       degree: text,
