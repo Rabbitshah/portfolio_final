@@ -102,6 +102,7 @@ export const site: Site = {
   ],
 
   // The one fixed fact in the bar chip (desktop, 1320px and up). Keep it true.
+  // TODO(content): confirm the venue name "ICSCDS-2025" against the IEEE paper.
   nowPlaying: "published: ieee icscds-2025",
 
   education: [
