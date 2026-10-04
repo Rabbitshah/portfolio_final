@@ -450,10 +450,10 @@
     opacity: 0.2;
   }
 }
+/* Transform only: the words keep full opacity (and full contrast) at every moment. */
 @keyframes word-in {
   from {
-    opacity: 0.35;
-    transform: translateY(0.35em);
+    transform: translateY(0.15em);
   }
 }
 @keyframes eq {
