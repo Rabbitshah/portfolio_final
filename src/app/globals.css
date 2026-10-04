@@ -241,10 +241,12 @@
 
   .eq-bar {
     width: 2px;
-    height: 3px;
     background: var(--accent-text);
-    /* Plays 3 times, then rests at 3px. Longest delay (.4s, set in NowPlaying) + 1s x 3 = 3.4s,
-       under the 5s limit of WCAG 2.2.2. Keep the total at 4s or less; a test checks it. */
+    /* Each bar's own height (h-* in NowPlaying) is its rest shape: the animation only moves it to
+       --eq-peak and back, so when it ends, or never runs (reduced motion, no JavaScript), the bars
+       sit at rest as three different heights, like an equalizer icon.
+       Plays 3 times. Longest delay (.4s, set in NowPlaying) + 1s x 3 = 3.4s, under the 5s limit of
+       WCAG 2.2.2. Keep the total at 4s or less; a test checks it. */
     animation: eq 1s ease-in-out 3;
   }
 
@@ -405,7 +407,7 @@
 
 @keyframes eq {
   50% {
-    height: 12px;
+    height: var(--eq-peak);
   }
 }
 @keyframes avail-pulse {
