@@ -49,3 +49,4 @@ next-env.d.ts
 
 # review artifacts (never committed)
 /.review/
+/_review.zip
