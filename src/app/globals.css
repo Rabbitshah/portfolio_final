@@ -265,6 +265,49 @@
     }
   }
 
+  /* Cursor follower ring (see CursorRing.tsx). Decorative: the real cursor is never hidden, so
+     there must never be a `cursor: none` rule anywhere (a test checks). JS writes only the
+     individual `translate` property; everything else here is state styling.
+     Hidden by default, so it can only appear after the script has seen a mouse. The z-index is the
+     largest possible, so the ring stays above the bar, the menus and any dialog. */
+  .cursor-ring {
+    --cursor-scale: 1;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2147483647;
+    width: 28px;
+    height: 28px;
+    margin: -14px 0 0 -14px;
+    border: 1.5px solid var(--ink);
+    border-radius: 50%;
+    /* A halo in the page color keeps the ink ring visible on dark or colored surfaces. */
+    box-shadow: 0 0 0 1.5px var(--bg);
+    opacity: 0;
+    pointer-events: none;
+    scale: var(--cursor-scale);
+    transition:
+      opacity 0.2s ease,
+      scale 0.18s ease-out,
+      background-color 0.18s ease-out;
+  }
+  .cursor-ring[data-state="default"] {
+    opacity: 1;
+  }
+  .cursor-ring[data-state="interactive"] {
+    --cursor-scale: 1.8;
+    opacity: 1;
+    background-color: color-mix(in srgb, var(--ink) 8%, transparent);
+  }
+  .cursor-ring[data-pressed] {
+    scale: calc(var(--cursor-scale) * 0.85);
+  }
+  @media (prefers-reduced-motion: reduce), (forced-colors: active), print {
+    .cursor-ring {
+      display: none;
+    }
+  }
+
   .eq-bar {
     width: 2px;
     background: var(--accent-text);

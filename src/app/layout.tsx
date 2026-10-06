@@ -4,6 +4,7 @@ import {
   Instrument_Serif,
   JetBrains_Mono,
 } from "next/font/google";
+import { CursorRing } from "@/components/interactive/CursorRing";
 import { Footer } from "@/components/sections/Footer";
 import { StatusBar } from "@/components/sections/StatusBar";
 import { env } from "@/env";
@@ -55,6 +56,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <StatusBar />
         {children}
         <Footer />
+        <CursorRing />
       </body>
     </html>
   );
