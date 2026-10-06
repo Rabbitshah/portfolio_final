@@ -239,6 +239,32 @@
     }
   }
 
+  /* Hero intro ("lights out"): three dots light up one after another, go out, and the headline
+     words rise in. About 0.71 s in total, once, CSS only (no JavaScript, no data-js).
+     The default styles are the final page (gantry hidden, words in place), and motion only adds
+     "from" keyframes inside the no-preference query. So with reduced motion, in print, or if
+     animation is off or broken, nothing stays hidden and nothing moves.
+     Timings (ms): dots on at 0 / 80 / 160 (70 each), gantry out 330 to 430, words start at 330
+     and 18 apart (delays are classes in Hero.tsx), each 220 long, last one ends at 712.
+     Keep the total under 800; a test reads it from the computed styles. */
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .gantry {
+      animation: gantry 430ms linear both;
+    }
+    .gantry i {
+      animation: light-on 70ms ease-out backwards;
+    }
+    .gantry i:nth-child(2) {
+      animation-delay: 80ms;
+    }
+    .gantry i:nth-child(3) {
+      animation-delay: 160ms;
+    }
+    .hero-word {
+      animation: word-in 220ms ease-out backwards;
+    }
+  }
+
   .eq-bar {
     width: 2px;
     background: var(--accent-text);
@@ -405,6 +431,31 @@
   }
 }
 
+@keyframes gantry {
+  0% {
+    opacity: 0;
+  }
+  14% {
+    opacity: 1;
+  }
+  77% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes light-on {
+  from {
+    opacity: 0.2;
+  }
+}
+/* Transform only: the words keep full opacity (and full contrast) at every moment. */
+@keyframes word-in {
+  from {
+    transform: translateY(0.15em);
+  }
+}
 @keyframes eq {
   50% {
     height: var(--eq-peak);

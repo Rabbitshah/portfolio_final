@@ -1,0 +1,119 @@
+{
+  "320x640": {
+    "h1": {
+      "x": 20,
+      "width": 280,
+      "height": 121
+    },
+    "fontSize": "41.6px",
+    "lines": ["Ibuildproductsthat", "ship,andsystems", "thatholdup."]
+  },
+  "360x740": {
+    "h1": {
+      "x": 20,
+      "width": 320,
+      "height": 121
+    },
+    "fontSize": "41.6px",
+    "lines": ["Ibuildproductsthat", "ship,andsystemsthat", "holdup."]
+  },
+  "390x844": {
+    "h1": {
+      "x": 20,
+      "width": 350,
+      "height": 130.5
+    },
+    "fontSize": "44.85px",
+    "lines": ["Ibuildproductsthat", "ship,andsystemsthat", "holdup."]
+  },
+  "430x932": {
+    "h1": {
+      "x": 20,
+      "width": 390,
+      "height": 143.9
+    },
+    "fontSize": "49.45px",
+    "lines": ["Ibuildproductsthat", "ship,andsystemsthat", "holdup."]
+  },
+  "600x900": {
+    "h1": {
+      "x": 24,
+      "width": 552,
+      "height": 111.7
+    },
+    "fontSize": "57.6px",
+    "lines": ["Ibuildproductsthatship,and", "systemsthatholdup."]
+  },
+  "768x1024": {
+    "h1": {
+      "x": 30.7,
+      "width": 384.2,
+      "height": 138.5
+    },
+    "fontSize": "47.616px",
+    "lines": ["Ibuildproductsthat", "ship,andsystemsthat", "holdup."]
+  },
+  "844x390": {
+    "h1": {
+      "x": 33.8,
+      "width": 422.2,
+      "height": 152.3
+    },
+    "fontSize": "52.328px",
+    "lines": ["Ibuildproductsthat", "ship,andsystemsthat", "holdup."]
+  },
+  "1024x768": {
+    "h1": {
+      "x": 40,
+      "width": 513.4,
+      "height": 111.2
+    },
+    "fontSize": "57.344px",
+    "lines": ["Ibuildproductsthatship,", "andsystemsthatholdup."]
+  },
+  "1180x820": {
+    "h1": {
+      "x": 40,
+      "width": 598.6,
+      "height": 128.2
+    },
+    "fontSize": "66.08px",
+    "lines": ["Ibuildproductsthatship,", "andsystemsthatholdup."]
+  },
+  "1280x720": {
+    "h1": {
+      "x": 80,
+      "width": 607.2,
+      "height": 139.1
+    },
+    "fontSize": "71.68px",
+    "lines": ["Ibuildproductsthatship,", "andsystemsthatholdup."]
+  },
+  "1440x900": {
+    "h1": {
+      "x": 160,
+      "width": 602.6,
+      "height": 234.7
+    },
+    "fontSize": "80.64px",
+    "lines": ["Ibuildproductsthat", "ship,andsystemsthat", "holdup."]
+  },
+  "1920x1080": {
+    "h1": {
+      "x": 316,
+      "width": 699.2,
+      "height": 286.6
+    },
+    "fontSize": "98.496px",
+    "lines": ["Ibuildproductsthat", "ship,andsystemsthat", "holdup."]
+  },
+  "2560x1440": {
+    "h1": {
+      "x": 468,
+      "width": 892.4,
+      "height": 357
+    },
+    "fontSize": "122.688px",
+    "lines": ["Ibuildproductsthat", "ship,andsystemsthat", "holdup."]
+  }
+}
