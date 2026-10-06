@@ -75,3 +75,40 @@ test("no console errors or warnings when the contact form is used", async ({
 
   expect(problems).toEqual([]);
 });
+
+// The cursor ring is added after hydration and driven by pointer events: moving, pressing,
+// touch input and leaving the window must not log anything either.
+test("no console errors or warnings while the mouse moves over the page", async ({
+  page,
+}) => {
+  const problems = collectProblems(page);
+  await page.goto("/");
+  await page.waitForLoadState("networkidle");
+  await expect(page.locator("[data-cursor-ring]")).toBeAttached();
+  for (const [x, y] of [
+    [200, 200],
+    [640, 360],
+    [1000, 120],
+    [300, 600],
+  ] as [number, number][]) {
+    await page.mouse.move(x, y, { steps: 5 });
+  }
+  await page.mouse.down();
+  await page.mouse.up();
+  await page.evaluate(() => {
+    document.dispatchEvent(
+      new PointerEvent("pointermove", {
+        pointerType: "touch",
+        clientX: 50,
+        clientY: 50,
+        bubbles: true,
+      }),
+    );
+    document.documentElement.dispatchEvent(
+      new MouseEvent("mouseout", { relatedTarget: null, bubbles: true }),
+    );
+  });
+  await page.mouse.move(500, 300);
+  await page.waitForTimeout(300);
+  expect(problems).toEqual([]);
+});
