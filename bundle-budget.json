@@ -1,6 +1,6 @@
 {
   "route": "/",
-  "baselineKb": 157,
+  "baselineKb": 157.8,
   "toleranceKb": 2,
   "warnAboveKb": 170,
   "history": [
@@ -28,6 +28,11 @@
       "change": "PR #8 round 4: NowPlaying rotation removed, so the chip is a Server Component with no client JS",
       "beforeKb": 157.4,
       "afterKb": 157
+    },
+    {
+      "change": "C1 cursor ring: one small client component in the root layout (useFinePointer, pointer listeners, one rAF loop)",
+      "beforeKb": 157,
+      "afterKb": 157.8
     }
   ]
 }
