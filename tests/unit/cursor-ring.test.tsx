@@ -332,3 +332,71 @@ it("removes its listeners and pending frame when it goes away", () => {
   pointer("pointermove", { x: 5, y: 5 });
   expect(queue.size).toBe(0);
 });
+
+// ---------------------------------------------------------------- labels
+
+it("shows the data-cursor word over an interactive element inside it, and nothing anywhere else", () => {
+  document.body.innerHTML =
+    '<article data-cursor="open"><h3>title</h3><a href="/a"><span>live</span></a></article>' +
+    '<a href="/b">plain</a>';
+  render(<CursorRing />);
+  pointer("pointermove", { x: 10, y: 10 });
+  const labelled = () => ringElement()?.hasAttribute("data-labelled");
+  const word = () =>
+    ringElement()?.querySelector(".cursor-ring-label")?.textContent;
+
+  pointer("pointerover", {}, document.querySelector("article span") as Element);
+  expect(state()).toBe("interactive");
+  expect(labelled()).toBe(true);
+  expect(word()).toBe("open");
+  // The word is part of the ring, which is hidden from assistive tech as a whole.
+  expect(
+    ringElement()
+      ?.querySelector(".cursor-ring-label")
+      ?.closest('[aria-hidden="true"]'),
+  ).toBe(ringElement());
+
+  // The card body is not interactive, so there is no label.
+  pointer("pointerover", {}, document.querySelector("h3") as Element);
+  expect(state()).toBe("default");
+  expect(labelled()).toBe(false);
+
+  // A link outside any data-cursor element: interactive, no label.
+  pointer("pointerover", {}, document.querySelector("a[href='/b']") as Element);
+  expect(state()).toBe("interactive");
+  expect(labelled()).toBe(false);
+});
+
+// ---------------------------------------------------------------- what it writes, and how
+
+it("writes only the translate property to the element's inline style", () => {
+  render(<CursorRing />);
+  const style = ringElement()?.style;
+  expect(style?.length).toBe(0);
+  pointer("pointermove", { x: 0, y: 0 });
+  pointer("pointermove", { x: 300, y: 200 });
+  pointer("pointerdown");
+  advance(2000, 60);
+  pointer("pointerup");
+  expect(style?.length).toBe(1);
+  expect(style?.translate).toBe("300px 200px");
+});
+
+it("adds every listener as passive", () => {
+  const add = vi.spyOn(document, "addEventListener");
+  render(<CursorRing />);
+  const ours = new Set([
+    "pointermove",
+    "pointerover",
+    "pointerdown",
+    "pointerup",
+    "pointercancel",
+    "mouseout",
+    "visibilitychange",
+  ]);
+  const calls = add.mock.calls.filter(([type]) => ours.has(type));
+  expect(calls.map(([type]) => type).sort()).toEqual([...ours].sort());
+  for (const [type, , options] of calls) {
+    expect(options, type).toEqual({ passive: true });
+  }
+});
