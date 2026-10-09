@@ -269,25 +269,35 @@
      there must never be a `cursor: none` rule anywhere (a test checks). JS writes only the
      individual `translate` property; everything else here is state styling.
      Hidden by default, so it can only appear after the script has seen a mouse. The z-index is the
-     largest possible, so the ring stays above the bar, the menus and any dialog. */
+     largest possible, so the ring stays above the bar, the menus and any dialog.
+     Size: 28 px, 44 px over interactive things. It changes the real width and height (not a scale),
+     so the border stays 1.5 px and the label stays 10 px. The ring is centred on the pointer by
+     its own -50% offset, with the transform origin at the top left, so growing or pressing never
+     moves its centre. Pressed is a scale of 0.85 of whatever the size is at that moment. */
   .cursor-ring {
-    --cursor-scale: 1;
     position: fixed;
     top: 0;
     left: 0;
     z-index: 2147483647;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 28px;
     height: 28px;
-    margin: -14px 0 0 -14px;
     border: 1.5px solid var(--ink);
     border-radius: 50%;
     /* A halo in the page color keeps the ink ring visible on dark or colored surfaces. */
     box-shadow: 0 0 0 1.5px var(--bg);
+    color: var(--ink);
+    font: 10px/1 var(--font-mono);
     opacity: 0;
     pointer-events: none;
-    scale: var(--cursor-scale);
+    transform: translate(-50%, -50%);
+    transform-origin: 0 0;
     transition:
       opacity 0.2s ease,
+      width 0.18s ease-out,
+      height 0.18s ease-out,
       scale 0.18s ease-out,
       background-color 0.18s ease-out;
   }
@@ -295,12 +305,20 @@
     opacity: 1;
   }
   .cursor-ring[data-state="interactive"] {
-    --cursor-scale: 1.8;
+    width: 44px;
+    height: 44px;
     opacity: 1;
     background-color: color-mix(in srgb, var(--ink) 8%, transparent);
   }
   .cursor-ring[data-pressed] {
-    scale: calc(var(--cursor-scale) * 0.85);
+    scale: 0.85;
+  }
+  .cursor-ring-label {
+    opacity: 0;
+    transition: opacity 0.18s ease-out;
+  }
+  .cursor-ring[data-labelled] .cursor-ring-label {
+    opacity: 1;
   }
   @media (prefers-reduced-motion: reduce), (forced-colors: active), print {
     .cursor-ring {

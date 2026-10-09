@@ -17,6 +17,7 @@ export function Window({
   screenFrame = "mock",
   decorativeScreen = false,
   caption,
+  cursorLabel,
   children,
   className,
 }: {
@@ -27,12 +28,17 @@ export function Window({
   /** Hide the screen area from assistive tech (for mock visuals). */
   decorativeScreen?: boolean;
   caption?: string;
+  /** Word the cursor ring shows over the interactive things inside this window. */
+  cursorLabel?: string;
   children: ReactNode;
   className?: string;
 }) {
   return (
     <div className={cx("min-w-0", className)}>
-      <article className="relative flex h-full flex-col overflow-hidden rounded-[20px] border border-line bg-card transition-colors hover:border-line-strong">
+      <article
+        data-cursor={cursorLabel}
+        className="relative flex h-full flex-col overflow-hidden rounded-[20px] border border-line bg-card transition-colors hover:border-line-strong"
+      >
         <header className="flex select-none items-center gap-3.5 border-b border-line px-4 py-3 font-mono text-[.76rem] text-muted">
           <TrafficLights />
           <span className="min-w-0 flex-1 truncate">{title}</span>
