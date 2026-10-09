@@ -56,6 +56,7 @@ export function ProjectWindow({ project }: { project: Project }) {
       }
       decorativeScreen={!!mockup}
       caption={mockup?.caption}
+      cursorLabel="open"
       className={cx(project.featured && "min-[700px]:col-span-2")}
     >
       <h3 className="font-serif text-[clamp(1.7rem,3vw,2.3rem)] leading-[1.1]">

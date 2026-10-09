@@ -13,7 +13,9 @@ import { useFinePointer } from "@/hooks/useFinePointer";
 //   - one requestAnimationFrame loop eases the ring toward that point and writes the individual
 //     CSS `translate` property (so only the compositor moves it). The loop stops when the ring
 //     has caught up, so an idle pointer costs nothing;
-//   - the look (size, fill, hidden) is CSS, switched by `data-state` and `data-pressed`.
+//   - the look (size, fill, hidden) is CSS, switched by `data-state` and `data-pressed`;
+//   - over an interactive element inside something marked `data-cursor="word"`, that word is shown
+//     inside the ring (`data-labelled`). Written when the state changes, never per frame.
 // See `.cursor-ring` in globals.css.
 
 const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
@@ -50,10 +52,12 @@ export function CursorRing() {
   const reducedMotion = useReducedMotionQuery();
   const active = finePointer && !reducedMotion;
   const ring = useRef<HTMLDivElement>(null);
+  const labelText = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const element = ring.current;
-    if (!active || !element) return;
+    const labelElement = labelText.current;
+    if (!active || !element || !labelElement) return;
 
     let x = 0;
     let y = 0;
@@ -68,6 +72,7 @@ export function CursorRing() {
     let touched = false; // the last input was touch or pen
     let overField = false;
     let overInteractive = false;
+    let label = ""; // the data-cursor word of the thing under the pointer, if it is interactive
     let pressed = false;
     let state = "hidden";
 
@@ -83,12 +88,20 @@ export function CursorRing() {
         element.dataset.state = next;
       }
       element.toggleAttribute("data-pressed", pressed && next !== "hidden");
+      // The old word stays in place while the label fades out.
+      const word = next === "interactive" ? label : "";
+      if (word && labelElement.textContent !== word)
+        labelElement.textContent = word;
+      element.toggleAttribute("data-labelled", word !== "");
     };
 
     const classify = (target: EventTarget | null) => {
       const node = target instanceof Element ? target : null;
       overField = node !== null && node.closest(FIELD) !== null;
       overInteractive = node !== null && node.closest(INTERACTIVE) !== null;
+      label = overInteractive
+        ? (node?.closest<HTMLElement>("[data-cursor]")?.dataset.cursor ?? "")
+        : "";
     };
 
     const draw = () => {
@@ -194,6 +207,7 @@ export function CursorRing() {
       if (frame) cancelAnimationFrame(frame);
       element.dataset.state = "hidden";
       element.removeAttribute("data-pressed");
+      element.removeAttribute("data-labelled");
     };
   }, [active]);
 
@@ -205,6 +219,8 @@ export function CursorRing() {
       data-cursor-ring=""
       data-state="hidden"
       className="cursor-ring"
-    />
+    >
+      <span ref={labelText} className="cursor-ring-label" />
+    </div>
   );
 }
