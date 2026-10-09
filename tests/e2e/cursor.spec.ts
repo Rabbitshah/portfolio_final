@@ -85,11 +85,11 @@ test("grows over a link in the bar, is plain over text, and shrinks while presse
   await work.hover();
   await expect(ring(page)).toHaveAttribute("data-state", "interactive");
   const width = async () => (await ring(page).boundingBox())?.width ?? 0;
-  await expect.poll(width).toBeGreaterThan(45); // 28 px grown by 1.8, about 50
+  await expect.poll(width).toBeCloseTo(44, 0); // 44 px, not a scaled 28
 
   await page.locator("h1").hover();
   await expect(ring(page)).toHaveAttribute("data-state", "default");
-  await expect.poll(width).toBeLessThan(32); // back to about 28
+  await expect.poll(width).toBeCloseTo(28, 0);
 
   await page.getByRole("link", { name: "See projects" }).hover();
   await expect(ring(page)).toHaveAttribute("data-state", "interactive");
