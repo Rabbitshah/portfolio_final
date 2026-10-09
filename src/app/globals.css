@@ -271,7 +271,7 @@
      Hidden by default, so it can only appear after the script has seen a mouse. The z-index is the
      largest possible, so the ring stays above the bar, the menus and any dialog.
      Size: 28 px, 44 px over interactive things. It changes the real width and height (not a scale),
-     so the border stays 1.5 px and the label stays 10 px. The ring is centred on the pointer by
+     so the border stays 1.5 px and the label stays 11.5 px. The ring is centred on the pointer by
      its own -50% offset, with the transform origin at the top left, so growing or pressing never
      moves its centre. Pressed is a scale of 0.85 of whatever the size is at that moment. */
   .cursor-ring {
@@ -289,7 +289,7 @@
     /* A halo in the page color keeps the ink ring visible on dark or colored surfaces. */
     box-shadow: 0 0 0 1.5px var(--bg);
     color: var(--ink);
-    font: 10px/1 var(--font-mono);
+    font: 11.5px/1 var(--font-mono);
     opacity: 0;
     pointer-events: none;
     transform: translate(-50%, -50%);

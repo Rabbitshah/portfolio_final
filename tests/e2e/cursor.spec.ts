@@ -431,8 +431,15 @@ test("shows 'open' over the interactive parts of a project card, and no word any
     const css = getComputedStyle(el);
     return { size: css.fontSize, family: css.fontFamily };
   });
-  expect(font.size).toBe("10px");
+  expect(font.size).toBe("11.5px"); // the project's text minimum
   expect(font.family).toContain("JetBrains Mono");
+  // The word fits inside the circle: its far corner is inside the ring's inner edge.
+  const word = await label.boundingBox();
+  const circle = await ring(page).boundingBox();
+  if (!word || !circle) throw new Error("no box");
+  expect(Math.hypot(word.width / 2, word.height / 2)).toBeLessThan(
+    circle.width / 2 - 1.5,
+  );
 
   // The card body is not interactive: the ring is plain.
   await page.locator('#work article[data-cursor="open"] h3').first().hover();
