@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- "MS" monogram. Colors are the accent tokens from globals.css (light, then dark). -->
+  <style>
+    .tile { fill: #2f7a4b; }
+    .mark { fill: #ffffff; }
+    @media (prefers-color-scheme: dark) {
+      .tile { fill: #86e0a0; }
+      .mark { fill: #06170c; }
+    }
+  </style>
+  <rect class="tile" width="64" height="64" rx="14" />
+  <text class="mark" x="32" y="33" text-anchor="middle" dominant-baseline="central" font-family="'Hanken Grotesk', Arial, Helvetica, sans-serif" font-size="32" font-weight="700" letter-spacing="-1">MS</text>
+</svg>
