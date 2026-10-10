@@ -1,6 +1,6 @@
 {
   "route": "/",
-  "baselineKb": 157.8,
+  "baselineKb": 158.1,
   "toleranceKb": 2,
   "warnAboveKb": 170,
   "history": [
@@ -33,6 +33,11 @@
       "change": "C1 cursor ring: one small client component in the root layout (useFinePointer, pointer listeners, one rAF loop)",
       "beforeKb": 157,
       "afterKb": 157.8
+    },
+    {
+      "change": "C1d dot + ring cursor: a second fixed element, a guarded class on <html>, a forced-colors check and an error guard in CursorRing",
+      "beforeKb": 157.9,
+      "afterKb": 158.1
     }
   ]
 }
