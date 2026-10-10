@@ -280,7 +280,8 @@ test.describe("with forced colors or print", () => {
     // Gone: the component unmounts the ring in forced colors (so it can never hide the native
     // cursor there), and until React has done that the CSS already has it at display: none.
     await expect(ring(page)).toBeHidden();
-    expect(await hasClass(page)).toBe(false);
+    // The class comes off once React has handled the change, a moment after the CSS hid the ring.
+    await expect.poll(() => hasClass(page)).toBe(false);
     await page.emulateMedia({ forcedColors: "none" });
     await expect(ring(page)).toBeVisible();
 
