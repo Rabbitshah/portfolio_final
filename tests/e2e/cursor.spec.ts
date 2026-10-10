@@ -571,7 +571,7 @@ test("in the built CSS the only `cursor: none` rule is scoped to the has-custom-
 
 const dot = (page: Page) => page.locator("[data-cursor-dot]");
 
-test("the dot is exactly on the pointer right after every move, 6px, and does not grow over links", async ({
+test("the dot is exactly on the pointer right after every move, and 6px over links too", async ({
   page,
 }) => {
   await ready(page);
@@ -602,8 +602,53 @@ test("the dot is exactly on the pointer right after every move, 6px, and does no
   await expect
     .poll(async () => (await ring(page).boundingBox())?.width)
     .toBe(44);
+  // Over the link the ring is 44px and the dot is still 6px (it is only invisible, see below).
   const box = await dot(page).boundingBox();
   expect([box?.width, box?.height]).toEqual([6, 6]);
+});
+
+test("the dot is invisible over links and buttons, visible everywhere else, and always 6px", async ({
+  page,
+}) => {
+  await ready(page);
+  const work = page
+    .getByRole("navigation", { name: "Primary" })
+    .getByRole("link", { name: "Work" });
+  const projects = page.getByRole("link", { name: "See projects" });
+  const size = async () => {
+    const box = await dot(page).boundingBox();
+    return [box?.width, box?.height];
+  };
+
+  // Plain content: default state, dot visible.
+  await page.locator("h1").hover();
+  await expect(ring(page)).toHaveAttribute("data-state", "default");
+  await expect(dot(page)).toHaveAttribute("data-state", "default");
+  await expect(dot(page)).toHaveCSS("opacity", "1");
+  expect(await size()).toEqual([6, 6]);
+
+  for (const target of [work, projects]) {
+    await target.hover();
+    await expect(dot(page)).toHaveAttribute("data-state", "interactive");
+    await expect(dot(page)).toHaveCSS("opacity", "0"); // after its 120 ms fade
+    expect(await size()).toEqual([6, 6]);
+
+    await page.locator("h1").hover();
+    await expect(dot(page)).toHaveAttribute("data-state", "default");
+    await expect(dot(page)).toHaveCSS("opacity", "1"); // and it is back
+  }
+});
+
+test("the dot fades out over a link in 120 ms", async ({ page }) => {
+  await ready(page);
+  const work = page
+    .getByRole("navigation", { name: "Primary" })
+    .getByRole("link", { name: "Work" });
+  await work.hover();
+  await expect(dot(page)).toHaveAttribute("data-state", "interactive");
+  expect(
+    await dot(page).evaluate((el) => getComputedStyle(el).transitionDuration),
+  ).toBe("0.12s");
 });
 
 test("the dot and the ring are both hidden over a text field", async ({
@@ -612,7 +657,10 @@ test("the dot and the ring are both hidden over a text field", async ({
   await ready(page);
   const message = page.locator("#contact-message");
   await message.scrollIntoViewIfNeeded();
-  await page.mouse.move(300, 300);
+  // Start over plain content (a heading), where the dot is visible. An arbitrary point on the page
+  // could be over a link, where the dot is deliberately invisible.
+  await page.locator("#contact-title").hover();
+  await expect(dot(page)).toHaveAttribute("data-state", "default");
   await expect(dot(page)).toHaveCSS("opacity", "1");
   await message.hover();
   await expect(dot(page)).toHaveAttribute("data-state", "hidden");
