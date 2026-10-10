@@ -14,6 +14,7 @@
     "test:e2e": "playwright test",
     "check:encoding": "node scripts/check-encoding.mjs",
     "content:check": "node scripts/content-check.mjs",
+    "perf:lcp": "node scripts/perf/lcp.mjs",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node --env-file-if-exists=.env.local scripts/db-migrate.mjs"
   },
