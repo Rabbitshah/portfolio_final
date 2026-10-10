@@ -265,9 +265,9 @@
     }
   }
 
-  /* Cursor follower ring (see CursorRing.tsx). Decorative: the real cursor is never hidden, so
-     there must never be a `cursor: none` rule anywhere (a test checks). JS writes only the
-     individual `translate` property; everything else here is state styling.
+  /* Custom cursor: a ring and a dot (see CursorRing.tsx). Decorative. The native cursor is hidden
+     only by the `html.has-custom-cursor` rule at the very end of this file, never from here.
+     JS writes only the individual `translate` property; everything else here is state styling.
      Hidden by default, so it can only appear after the script has seen a mouse. The z-index is the
      largest possible, so the ring stays above the bar, the menus and any dialog.
      Size: 28 px, 44 px over interactive things. It changes the real width and height (not a scale),
@@ -320,8 +320,30 @@
   .cursor-ring[data-labelled] .cursor-ring-label {
     opacity: 1;
   }
+  /* The dot is the pointer: 6 px, always at the exact pointer position, and it does not grow over
+     links (only the ring does). Same centring and stacking as the ring, and above it. */
+  .cursor-dot {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2147483647;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--ink);
+    box-shadow: 0 0 0 1.5px var(--bg);
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.2s ease;
+  }
+  .cursor-dot[data-state="default"],
+  .cursor-dot[data-state="interactive"] {
+    opacity: 1;
+  }
   @media (prefers-reduced-motion: reduce), (forced-colors: active), print {
-    .cursor-ring {
+    .cursor-ring,
+    .cursor-dot {
       display: none;
     }
   }
@@ -542,5 +564,30 @@
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
+  }
+}
+
+/* ---------- NATIVE CURSOR HIDDEN BY THE CUSTOM CURSOR ----------
+   The only `cursor: none` in the project. It applies only while CursorRing has put
+   `has-custom-cursor` on <html> (it does that after the first mouse move, and takes it off when the
+   pointer leaves the window, on touch or pen input, with reduced motion or forced colors, on
+   unmount, and after any error). Without JavaScript nothing sets the class.
+   Unlayered on purpose, so it beats Tailwind utilities such as cursor-pointer. The media query is
+   a second guard: even a stale class does nothing on touch, with reduced motion or in forced
+   colors. Text fields and selects get their native cursor back with `revert` (back to what the
+   browser itself uses for that element: the text caret, the arrow). Editable areas have no
+   browser cursor of their own to go back to (a plain div would inherit `none`), so they get
+   `auto`, which shows the text caret over editable text. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) and (not (forced-colors: active)) {
+  html.has-custom-cursor,
+  html.has-custom-cursor * {
+    cursor: none;
+  }
+  html.has-custom-cursor :is(input, textarea, select) {
+    cursor: revert;
+  }
+  html.has-custom-cursor [contenteditable]:not([contenteditable="false"]),
+  html.has-custom-cursor [contenteditable]:not([contenteditable="false"]) * {
+    cursor: auto;
   }
 }

@@ -3,13 +3,19 @@
 import { useEffect, useRef, useSyncExternalStore } from "react";
 import { useFinePointer } from "@/hooks/useFinePointer";
 
-// A decorative ring that follows the mouse. The real cursor is never hidden or changed, so the
-// operating system's pointer size and color, the I-beam over text fields and the click hotspot
-// all stay exactly as they are (and nothing in the CSS may ever set `cursor: none`).
+// A custom cursor: a 6 px dot exactly at the pointer (no easing) and a ring that eases after it.
+//
+// The native cursor is hidden in ONE way only: a class, `has-custom-cursor`, that this component
+// puts on <html> once it has mounted AND has seen the first mouse move (see the rule at the end of
+// globals.css; there is no `cursor: none` anywhere else). The class comes off again whenever the
+// pointer is not a mouse over the page: it leaves the window, touch or pen input arrives, reduced
+// motion or forced colors become active, the component goes away, or anything throws here. Taking
+// the class off restores the native cursor completely. Without JavaScript the class is never set.
 //
 // Rendered once, from the root layout, and only after hydration on a device with a mouse or
-// trackpad and without a reduced-motion preference. It is one fixed element:
-//   - the pointer listeners only store a point; they never touch React state or read layout;
+// trackpad, without a reduced-motion preference and not in forced-colors mode. Two fixed elements:
+//   - the pointer listeners only store a point and move the dot; they never touch React state or
+//     read layout;
 //   - one requestAnimationFrame loop eases the ring toward that point and writes the individual
 //     CSS `translate` property (so only the compositor moves it). The loop stops when the ring
 //     has caught up, so an idle pointer costs nothing;
@@ -19,18 +25,19 @@ import { useFinePointer } from "@/hooks/useFinePointer";
 // See `.cursor-ring` in globals.css.
 
 const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
+const FORCED_COLORS = "(forced-colors: active)";
+// The class on <html> that hides the native cursor. Keep in step with globals.css.
+const CUSTOM_CURSOR_CLASS = "has-custom-cursor";
 
-function subscribeReducedMotion(onChange: () => void): () => void {
-  const media = window.matchMedia(REDUCED_MOTION);
-  media.addEventListener("change", onChange);
-  return () => media.removeEventListener("change", onChange);
-}
-
-// true on the server, so the ring is never part of the HTML.
-function useReducedMotionQuery(): boolean {
+// true on the server, so nothing is rendered there. Re-evaluated when the setting changes.
+function useMediaQuery(query: string): boolean {
   return useSyncExternalStore(
-    subscribeReducedMotion,
-    () => window.matchMedia(REDUCED_MOTION).matches,
+    (onChange) => {
+      const media = window.matchMedia(query);
+      media.addEventListener("change", onChange);
+      return () => media.removeEventListener("change", onChange);
+    },
+    () => window.matchMedia(query).matches,
     () => true,
   );
 }
@@ -49,15 +56,19 @@ const SNAP_PX = 0.1;
 
 export function CursorRing() {
   const finePointer = useFinePointer();
-  const reducedMotion = useReducedMotionQuery();
-  const active = finePointer && !reducedMotion;
+  const reducedMotion = useMediaQuery(REDUCED_MOTION);
+  const forcedColors = useMediaQuery(FORCED_COLORS);
+  const active = finePointer && !reducedMotion && !forcedColors;
   const ring = useRef<HTMLDivElement>(null);
+  const dot = useRef<HTMLDivElement>(null);
   const labelText = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const element = ring.current;
+    const dotElement = dot.current;
     const labelElement = labelText.current;
-    if (!active || !element || !labelElement) return;
+    if (!active || !element || !dotElement || !labelElement) return;
+    const root = document.documentElement;
 
     let x = 0;
     let y = 0;
@@ -75,6 +86,7 @@ export function CursorRing() {
     let label = ""; // the data-cursor word of the thing under the pointer, if it is interactive
     let pressed = false;
     let state = "hidden";
+    let failed = false; // something threw: stay out of the way for the rest of this visit
 
     const apply = () => {
       const next =
@@ -86,7 +98,14 @@ export function CursorRing() {
       if (next !== state) {
         state = next;
         element.dataset.state = next;
+        dotElement.dataset.state = next;
       }
+      // The native cursor is hidden only while a mouse is over the page. Over a text field the
+      // class stays on, and the CSS gives the field its native cursor back.
+      root.classList.toggle(
+        CUSTOM_CURSOR_CLASS,
+        seen && inside && !touched && !failed,
+      );
       element.toggleAttribute("data-pressed", pressed && next !== "hidden");
       // The old word stays in place while the label fades out.
       const word = next === "interactive" ? label : "";
@@ -108,7 +127,35 @@ export function CursorRing() {
       element.style.translate = `${x}px ${y}px`;
     };
 
-    const step = (now: number) => {
+    // The dot is the pointer itself: written on every move, never eased.
+    const placeDot = (clientX: number, clientY: number) => {
+      dotElement.style.translate = `${clientX}px ${clientY}px`;
+    };
+
+    // Any error: give the native cursor back and stop doing anything for the rest of the visit.
+    const fail = (error: unknown) => {
+      failed = true;
+      root.classList.remove(CUSTOM_CURSOR_CLASS);
+      if (frame) {
+        cancelAnimationFrame(frame);
+        frame = 0;
+      }
+      element.dataset.state = "hidden";
+      dotElement.dataset.state = "hidden";
+      console.error("CursorRing switched itself off after an error:", error);
+    };
+    const guard =
+      <Args extends unknown[]>(handler: (...args: Args) => void) =>
+      (...args: Args) => {
+        if (failed) return;
+        try {
+          handler(...args);
+        } catch (error) {
+          fail(error);
+        }
+      };
+
+    const step = guard((now: number) => {
       frame = 0;
       const elapsed = Math.min(Math.max(now - lastFrame, 0), MAX_FRAME_MS);
       lastFrame = now;
@@ -122,7 +169,7 @@ export function CursorRing() {
         frame = requestAnimationFrame(step);
       }
       draw();
-    };
+    });
 
     // Touch and pen input is not ours to follow: hide until the mouse moves again.
     const isMouse = (event: PointerEvent) => {
@@ -133,10 +180,11 @@ export function CursorRing() {
       return false;
     };
 
-    const onMove = (event: PointerEvent) => {
+    const onMove = guard((event: PointerEvent) => {
       if (!isMouse(event)) return;
       targetX = event.clientX;
       targetY = event.clientY;
+      placeDot(targetX, targetY);
       if (!seen || touched || !inside) {
         // First move, or back after touch or leaving: pick up what is under the pointer.
         classify(event.target);
@@ -154,38 +202,38 @@ export function CursorRing() {
         lastFrame = performance.now();
         frame = requestAnimationFrame(step);
       }
-    };
+    });
 
-    const onOver = (event: PointerEvent) => {
+    const onOver = guard((event: PointerEvent) => {
       if (!isMouse(event)) return;
       classify(event.target);
       apply();
-    };
+    });
 
-    const onDown = (event: PointerEvent) => {
+    const onDown = guard((event: PointerEvent) => {
       if (!isMouse(event)) return;
       pressed = event.button === 0;
       apply();
-    };
+    });
 
-    const onUp = () => {
+    const onUp = guard(() => {
       pressed = false;
       apply();
-    };
+    });
 
-    const onLeave = (event: MouseEvent) => {
+    const onLeave = guard((event: MouseEvent) => {
       if (event.relatedTarget !== null) return;
       inside = false;
       pressed = false;
       apply();
-    };
+    });
 
-    const onVisibility = () => {
+    const onVisibility = guard(() => {
       if (document.hidden && frame) {
         cancelAnimationFrame(frame);
         frame = 0;
       }
-    };
+    });
 
     const options = { passive: true } as const;
     document.addEventListener("pointermove", onMove, options);
@@ -205,7 +253,9 @@ export function CursorRing() {
       document.removeEventListener("mouseout", onLeave);
       document.removeEventListener("visibilitychange", onVisibility);
       if (frame) cancelAnimationFrame(frame);
+      root.classList.remove(CUSTOM_CURSOR_CLASS);
       element.dataset.state = "hidden";
+      dotElement.dataset.state = "hidden";
       element.removeAttribute("data-pressed");
       element.removeAttribute("data-labelled");
     };
@@ -213,14 +263,23 @@ export function CursorRing() {
 
   if (!active) return null;
   return (
-    <div
-      ref={ring}
-      aria-hidden="true"
-      data-cursor-ring=""
-      data-state="hidden"
-      className="cursor-ring"
-    >
-      <span ref={labelText} className="cursor-ring-label" />
-    </div>
+    <>
+      <div
+        ref={ring}
+        aria-hidden="true"
+        data-cursor-ring=""
+        data-state="hidden"
+        className="cursor-ring"
+      >
+        <span ref={labelText} className="cursor-ring-label" />
+      </div>
+      <div
+        ref={dot}
+        aria-hidden="true"
+        data-cursor-dot=""
+        data-state="hidden"
+        className="cursor-dot"
+      />
+    </>
   );
 }

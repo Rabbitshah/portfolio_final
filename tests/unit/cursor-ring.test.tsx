@@ -7,7 +7,7 @@ import { CursorRing } from "@/components/interactive/CursorRing";
 // use a fake frame clock so the frame rate is under our control.
 
 // ---- matchMedia, with a way to flip a query mid-session
-let media = { fine: true, reduced: false };
+let media = { fine: true, reduced: false, forced: false };
 let changeListeners: (() => void)[] = [];
 
 function stubMedia() {
@@ -17,6 +17,7 @@ function stubMedia() {
       get matches() {
         if (query.includes("pointer: fine")) return media.fine;
         if (query.includes("prefers-reduced-motion")) return media.reduced;
+        if (query.includes("forced-colors")) return media.forced;
         return false;
       },
       media: query,
@@ -93,6 +94,12 @@ function pointer(
   });
 }
 
+const hasClass = () =>
+  document.documentElement.classList.contains("has-custom-cursor");
+const dotElement = () =>
+  document.querySelector<HTMLElement>("[data-cursor-dot]");
+const dotPosition = () => dotElement()?.style.translate;
+
 const ringElement = () =>
   document.querySelector<HTMLElement>("[data-cursor-ring]");
 const state = () => ringElement()?.dataset.state;
@@ -104,7 +111,7 @@ const position = () => {
 };
 
 beforeEach(() => {
-  media = { fine: true, reduced: false };
+  media = { fine: true, reduced: false, forced: false };
   changeListeners = [];
   stubMedia();
   stubFrames();
@@ -112,6 +119,7 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
+  document.documentElement.classList.remove("has-custom-cursor");
   document.body.innerHTML = "";
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
@@ -399,4 +407,144 @@ it("adds every listener as passive", () => {
   for (const [type, , options] of calls) {
     expect(options, type).toEqual({ passive: true });
   }
+});
+
+// ---------------------------------------------------------------- the dot and the native cursor (C1d)
+
+it("is not rendered in forced-colors mode, and goes away if it switches on mid-session", () => {
+  media.forced = true;
+  render(<CursorRing />);
+  expect(ringElement()).toBeNull();
+  expect(dotElement()).toBeNull();
+
+  media.forced = false;
+  act(() => changeListeners.forEach((listener) => listener()));
+  expect(dotElement()).not.toBeNull();
+  pointer("pointermove", { x: 5, y: 5 });
+  expect(hasClass()).toBe(true);
+
+  media.forced = true;
+  act(() => changeListeners.forEach((listener) => listener()));
+  expect(dotElement()).toBeNull();
+  expect(hasClass()).toBe(false);
+});
+
+it("has the dot and the ring as a decorative pair, and the dot is hidden until the first move", () => {
+  render(<CursorRing />);
+  expect(dotElement()?.getAttribute("aria-hidden")).toBe("true");
+  expect(ringElement()?.getAttribute("aria-hidden")).toBe("true");
+  expect(dotElement()?.dataset.state).toBe("hidden");
+  pointer("pointermove", { x: 40, y: 30 });
+  expect(dotElement()?.dataset.state).toBe("default");
+});
+
+it("does not hide the native cursor before the first mouse move", () => {
+  render(<CursorRing />);
+  expect(ringElement()).not.toBeNull();
+  expect(hasClass()).toBe(false);
+  pointer("pointerover", {}, document.body);
+  expect(hasClass()).toBe(false);
+});
+
+it("hides the native cursor after the first mouse move, and keeps it hidden over a text field", () => {
+  document.body.innerHTML = "<textarea></textarea>";
+  render(<CursorRing />);
+  pointer("pointermove", { x: 10, y: 10 });
+  expect(hasClass()).toBe(true);
+  pointer("pointerover", {}, document.querySelector("textarea") as Element);
+  expect(state()).toBe("hidden");
+  expect(dotElement()?.dataset.state).toBe("hidden");
+  // The class stays on; the CSS gives the field its native cursor back.
+  expect(hasClass()).toBe(true);
+});
+
+it("puts the dot exactly on the pointer at every move, with no easing and no frame", () => {
+  render(<CursorRing />);
+  pointer("pointermove", { x: 10, y: 20 });
+  expect(dotPosition()).toBe("10px 20px");
+  pointer("pointermove", { x: 700, y: 450 });
+  // Right away: nothing has been animated yet, and the ring is still behind.
+  expect(dotPosition()).toBe("700px 450px");
+  expect(position()?.x).toBeLessThan(700);
+  pointer("pointermove", { x: 701.5, y: 451.25 });
+  expect(dotPosition()).toBe("701.5px 451.25px");
+});
+
+it("gives the native cursor back when the pointer leaves the window, and takes it again on the next move", () => {
+  render(<CursorRing />);
+  pointer("pointermove", { x: 5, y: 5 });
+  expect(hasClass()).toBe(true);
+  pointer("mouseout", { relatedTarget: null });
+  expect(hasClass()).toBe(false);
+  pointer("pointermove", { x: 9, y: 9 });
+  expect(hasClass()).toBe(true);
+});
+
+it("gives the native cursor back on touch or pen input, and takes it again for the mouse", () => {
+  render(<CursorRing />);
+  pointer("pointermove", { x: 5, y: 5 });
+  expect(hasClass()).toBe(true);
+  pointer("pointermove", { x: 50, y: 50, pointerType: "touch" });
+  expect(hasClass()).toBe(false);
+  pointer("pointermove", { x: 60, y: 60 });
+  expect(hasClass()).toBe(true);
+  pointer("pointerdown", { pointerType: "pen" });
+  expect(hasClass()).toBe(false);
+});
+
+it("gives the native cursor back when reduced motion switches on, and when the component goes away", () => {
+  const { unmount } = render(<CursorRing />);
+  pointer("pointermove", { x: 5, y: 5 });
+  expect(hasClass()).toBe(true);
+  media.reduced = true;
+  act(() => changeListeners.forEach((listener) => listener()));
+  expect(hasClass()).toBe(false);
+
+  media.reduced = false;
+  act(() => changeListeners.forEach((listener) => listener()));
+  pointer("pointermove", { x: 8, y: 8 });
+  expect(hasClass()).toBe(true);
+  unmount();
+  expect(hasClass()).toBe(false);
+});
+
+it("gives the native cursor back for good if the animation loop throws", () => {
+  const error = vi.spyOn(console, "error").mockImplementation(() => {});
+  render(<CursorRing />);
+  pointer("pointermove", { x: 0, y: 0 });
+  expect(hasClass()).toBe(true);
+  // From now on, writing the ring's position throws: the next frame fails.
+  Object.defineProperty(ringElement()?.style, "translate", {
+    get: () => "",
+    set: () => {
+      throw new Error("boom");
+    },
+  });
+  pointer("pointermove", { x: 300, y: 200 });
+  expect(hasClass()).toBe(true);
+  advance(100, 60);
+  expect(hasClass()).toBe(false);
+  expect(state()).toBe("hidden");
+  expect(error).toHaveBeenCalledTimes(1);
+  // It stays out of the way: more movement does not bring the class back.
+  pointer("pointermove", { x: 5, y: 5 });
+  pointer("pointermove", { x: 9, y: 9 });
+  advance(100, 60);
+  expect(hasClass()).toBe(false);
+  expect(queue.size).toBe(0);
+});
+
+it("gives the native cursor back for good if a pointer handler throws", () => {
+  const error = vi.spyOn(console, "error").mockImplementation(() => {});
+  render(<CursorRing />);
+  pointer("pointermove", { x: 0, y: 0 });
+  Object.defineProperty(dotElement()?.style, "translate", {
+    get: () => "",
+    set: () => {
+      throw new Error("boom");
+    },
+  });
+  pointer("pointermove", { x: 20, y: 20 });
+  expect(hasClass()).toBe(false);
+  expect(error).toHaveBeenCalledTimes(1);
 });

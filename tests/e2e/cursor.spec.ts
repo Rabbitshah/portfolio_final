@@ -43,36 +43,88 @@ test("is hidden until the mouse moves, then follows it to within 2 px", async ({
   await expect(ring(page)).not.toHaveAttribute("data-state", "hidden");
 });
 
-test("is one fixed element that never changes the cursor: no `cursor: none` anywhere", async ({
-  page,
-}) => {
-  await ready(page);
-  await page.mouse.move(400, 300);
-  expect(await ring(page).count()).toBe(1);
-
-  const noneRules = await page.evaluate(() => {
+// The native cursor is hidden in one way only: the `has-custom-cursor` class on <html>, which the
+// component sets after the first mouse move. There is exactly one `cursor: none` rule, scoped to it.
+const noneRulesOnPage = (page: Page) =>
+  page.evaluate(() => {
     const found: string[] = [];
     const walk = (rules: CSSRuleList) => {
       for (const rule of Array.from(rules)) {
         const styled = rule as CSSStyleRule;
-        if (styled.style?.cursor === "none") found.push(styled.cssText);
+        if (styled.style?.cursor === "none") found.push(styled.selectorText);
         if ("cssRules" in rule) walk((rule as CSSGroupingRule).cssRules);
       }
     };
     for (const sheet of Array.from(document.styleSheets)) walk(sheet.cssRules);
     return found;
   });
-  expect(noneRules).toEqual([]);
-
-  const cursors = await page.evaluate(() =>
-    ["body", "a[href]", "button", "[data-cursor-ring]"].map(
-      (selector) =>
-        getComputedStyle(document.querySelector(selector) as Element).cursor,
-    ),
+const hasClass = (page: Page) =>
+  page.evaluate(() =>
+    document.documentElement.classList.contains("has-custom-cursor"),
   );
-  expect(cursors).not.toContain("none");
-  // Normal browser values, untouched (buttons keep the browser's own default).
-  expect(cursors.slice(0, 2)).toEqual(["auto", "pointer"]);
+const cursorOf = (page: Page, selector: string) =>
+  page.evaluate(
+    (selector) =>
+      getComputedStyle(document.querySelector(selector) as Element).cursor,
+    selector,
+  );
+
+test("the only `cursor: none` rule is scoped to the has-custom-cursor class, and nothing sets the class before the first move", async ({
+  page,
+}) => {
+  await ready(page);
+  const rules = await noneRulesOnPage(page);
+  expect(rules.length, "the rule exists").toBeGreaterThan(0);
+  for (const selector of rules) {
+    for (const part of selector.split(",")) {
+      expect(part.trim(), "every selector is scoped").toMatch(
+        /^html\.has-custom-cursor( \*)?$/,
+      );
+    }
+  }
+  // Before the first mouse move: no class, and the cursors are the browser's own.
+  expect(await hasClass(page)).toBe(false);
+  expect(await cursorOf(page, "body")).toBe("auto");
+  expect(await cursorOf(page, "a[href]")).toBe("pointer");
+  expect(await cursorOf(page, "#contact-message")).toBe("text");
+});
+
+test("after the first mouse move the class is on and the native cursor is hidden everywhere but in text fields", async ({
+  page,
+}) => {
+  await ready(page);
+  expect(await hasClass(page)).toBe(false);
+  await page.mouse.move(400, 300);
+  await expect.poll(() => hasClass(page)).toBe(true);
+  expect(await cursorOf(page, "body")).toBe("none");
+  expect(await cursorOf(page, "a[href]")).toBe("none");
+  expect(await cursorOf(page, "button")).toBe("none");
+});
+
+test("text fields, selects and editable areas keep their native cursor while the class is on", async ({
+  page,
+}) => {
+  await ready(page);
+  await page.mouse.move(400, 300);
+  await expect.poll(() => hasClass(page)).toBe(true);
+  await page.evaluate(() => {
+    document.body.insertAdjacentHTML(
+      "beforeend",
+      '<div id="probe"><select id="p-select"><option>a</option></select>' +
+        '<input id="p-text" type="text"><input id="p-box" type="checkbox">' +
+        '<div id="p-edit" contenteditable="true"><b id="p-edit-child">x</b></div>' +
+        '<div id="p-noedit" contenteditable="false">y</div></div>',
+    );
+  });
+  expect(await cursorOf(page, "#contact-message")).toBe("text");
+  expect(await cursorOf(page, "#contact-name")).toBe("text");
+  expect(await cursorOf(page, "#p-text")).toBe("text");
+  expect(await cursorOf(page, "#p-select")).toBe("default");
+  expect(await cursorOf(page, "#p-box")).not.toBe("none");
+  expect(await cursorOf(page, "#p-edit")).toBe("auto");
+  expect(await cursorOf(page, "#p-edit-child")).toBe("auto");
+  // Not editable: hidden like the rest of the page.
+  expect(await cursorOf(page, "#p-noedit")).toBe("none");
 });
 
 // ---------------------------------------------------------------- states
@@ -225,7 +277,10 @@ test.describe("with forced colors or print", () => {
     await expect(ring(page)).toBeVisible();
 
     await page.emulateMedia({ forcedColors: "active" });
-    await expect(ring(page)).toHaveCSS("display", "none");
+    // Gone: the component unmounts the ring in forced colors (so it can never hide the native
+    // cursor there), and until React has done that the CSS already has it at display: none.
+    await expect(ring(page)).toBeHidden();
+    expect(await hasClass(page)).toBe(false);
     await page.emulateMedia({ forcedColors: "none" });
     await expect(ring(page)).toBeVisible();
 
@@ -469,7 +524,9 @@ test("only the project cards carry a cursor label", async ({ page }) => {
 
 // ---------------------------------------------------------------- the built CSS
 
-test("the built CSS files contain no `cursor: none` anywhere", () => {
+test("in the built CSS the only `cursor: none` rule is scoped to the has-custom-cursor class", async ({
+  page,
+}) => {
   const files: string[] = [];
   const walk = (dir: string) => {
     for (const entry of readdirSync(dir, { withFileTypes: true })) {
@@ -481,7 +538,206 @@ test("the built CSS files contain no `cursor: none` anywhere", () => {
   walk(join(process.cwd(), ".next", "static"));
   // The build runs before the tests; an empty list would make this pass for nothing.
   expect(files.length).toBeGreaterThan(0);
+
+  await page.goto("about:blank");
+  const found: string[] = [];
   for (const file of files) {
-    expect(readFileSync(file, "utf8"), file).not.toMatch(/cursor\s*:\s*none/);
+    const css = readFileSync(file, "utf8");
+    const selectors = await page.evaluate((css) => {
+      const sheet = new CSSStyleSheet();
+      sheet.replaceSync(css);
+      const out: string[] = [];
+      const walk = (rules: CSSRuleList) => {
+        for (const rule of Array.from(rules)) {
+          const styled = rule as CSSStyleRule;
+          if (styled.style?.cursor === "none") out.push(styled.selectorText);
+          if ("cssRules" in rule) walk((rule as CSSGroupingRule).cssRules);
+        }
+      };
+      walk(sheet.cssRules);
+      return out;
+    }, css);
+    found.push(...selectors);
   }
+  expect(found.length, "the rule exists in the build").toBeGreaterThan(0);
+  for (const selector of found) {
+    for (const part of selector.split(",")) {
+      expect(part.trim()).toMatch(/^html\.has-custom-cursor( \*)?$/);
+    }
+  }
+});
+
+// ---------------------------------------------------------------- the dot (C1d)
+
+const dot = (page: Page) => page.locator("[data-cursor-dot]");
+
+test("the dot is exactly on the pointer right after every move, 6px, and does not grow over links", async ({
+  page,
+}) => {
+  await ready(page);
+  for (const [x, y] of [
+    [437, 311],
+    [800, 120],
+    [95.5, 640.25],
+  ] as [number, number][]) {
+    await page.mouse.move(x, y);
+    // No waiting: the dot is not eased.
+    const box = await dot(page).boundingBox();
+    if (!box) throw new Error("no dot box");
+    expect(
+      Math.abs(box.x + box.width / 2 - x),
+      `x at ${x}`,
+    ).toBeLessThanOrEqual(0.5);
+    expect(
+      Math.abs(box.y + box.height / 2 - y),
+      `y at ${y}`,
+    ).toBeLessThanOrEqual(0.5);
+    expect([box.width, box.height]).toEqual([6, 6]);
+  }
+  const work = page
+    .getByRole("navigation", { name: "Primary" })
+    .getByRole("link", { name: "Work" });
+  await work.hover();
+  await expect(ring(page)).toHaveAttribute("data-state", "interactive");
+  await expect
+    .poll(async () => (await ring(page).boundingBox())?.width)
+    .toBe(44);
+  const box = await dot(page).boundingBox();
+  expect([box?.width, box?.height]).toEqual([6, 6]);
+});
+
+test("the dot and the ring are both hidden over a text field", async ({
+  page,
+}) => {
+  await ready(page);
+  const message = page.locator("#contact-message");
+  await message.scrollIntoViewIfNeeded();
+  await page.mouse.move(300, 300);
+  await expect(dot(page)).toHaveCSS("opacity", "1");
+  await message.hover();
+  await expect(dot(page)).toHaveAttribute("data-state", "hidden");
+  await expect(dot(page)).toHaveCSS("opacity", "0");
+  await expect(ring(page)).toHaveCSS("opacity", "0");
+  expect(await hasClass(page)).toBe(true);
+});
+
+test("a click on a link at the pointer still navigates, with the native cursor hidden", async ({
+  page,
+}) => {
+  await ready(page);
+  const work = page
+    .getByRole("navigation", { name: "Primary" })
+    .getByRole("link", { name: "Work" });
+  await work.hover();
+  await expect.poll(() => hasClass(page)).toBe(true);
+  const point = await center(work);
+  const top = await page.evaluate(({ x, y }) => {
+    const element = document.elementFromPoint(x, y);
+    return {
+      isRingOrDot:
+        element?.hasAttribute("data-cursor-ring") ||
+        element?.hasAttribute("data-cursor-dot"),
+      link: element?.closest("a")?.textContent?.trim(),
+    };
+  }, point);
+  expect(top).toEqual({ isRingOrDot: false, link: "Work" });
+  await page.mouse.click(point.x, point.y);
+  await expect(page).toHaveURL(/#work$/);
+});
+
+// ---------------------------------------------------------------- the native cursor comes back
+
+test("the native cursor comes back when the pointer leaves the window, and is hidden again on the next move", async ({
+  page,
+}) => {
+  await ready(page);
+  await page.mouse.move(300, 300);
+  await expect.poll(() => hasClass(page)).toBe(true);
+  await page.evaluate(() => {
+    document.documentElement.dispatchEvent(
+      new MouseEvent("mouseout", { relatedTarget: null, bubbles: true }),
+    );
+  });
+  await expect.poll(() => hasClass(page)).toBe(false);
+  expect(await cursorOf(page, "body")).toBe("auto");
+  expect(await cursorOf(page, "a[href]")).toBe("pointer");
+  await page.mouse.move(320, 310);
+  await expect.poll(() => hasClass(page)).toBe(true);
+});
+
+test("the native cursor comes back on touch and pen input, and is hidden again for the mouse", async ({
+  page,
+}) => {
+  await ready(page);
+  await page.mouse.move(300, 300);
+  await expect.poll(() => hasClass(page)).toBe(true);
+  for (const pointerType of ["touch", "pen"]) {
+    await page.mouse.move(310, 310);
+    await expect.poll(() => hasClass(page)).toBe(true);
+    await page.evaluate((pointerType) => {
+      document.dispatchEvent(
+        new PointerEvent("pointermove", {
+          pointerType,
+          clientX: 90,
+          clientY: 90,
+          bubbles: true,
+        }),
+      );
+    }, pointerType);
+    await expect.poll(() => hasClass(page), pointerType).toBe(false);
+    expect(await cursorOf(page, "body")).toBe("auto");
+  }
+});
+
+test("the native cursor comes back when reduced motion or forced colors switch on during the visit", async ({
+  page,
+}) => {
+  await ready(page);
+  await page.mouse.move(300, 300);
+  await expect.poll(() => hasClass(page)).toBe(true);
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect.poll(() => hasClass(page)).toBe(false);
+  expect(await cursorOf(page, "body")).toBe("auto");
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  // The ring comes back (it needs a mouse move to take the cursor again).
+  await expect(ring(page)).toBeAttached();
+  await page.mouse.move(320, 320);
+  await expect.poll(() => hasClass(page)).toBe(true);
+
+  await page.emulateMedia({ forcedColors: "active" });
+  await expect.poll(() => hasClass(page)).toBe(false);
+  expect(await cursorOf(page, "body")).not.toBe("none");
+  await expect(dot(page)).toHaveCount(0);
+});
+
+test("the native cursor comes back for good if the animation loop throws", async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  page.on("console", (message) => {
+    if (message.type() === "error") errors.push(message.text());
+  });
+  await ready(page);
+  await page.mouse.move(300, 300);
+  await expect.poll(() => hasClass(page)).toBe(true);
+  // From now on, writing the ring's position throws, so the next frame fails.
+  await page.evaluate(() => {
+    const element = document.querySelector("[data-cursor-ring]") as HTMLElement;
+    Object.defineProperty(element.style, "translate", {
+      get: () => "",
+      set: () => {
+        throw new Error("boom");
+      },
+    });
+  });
+  await page.mouse.move(700, 400);
+  await expect.poll(() => hasClass(page)).toBe(false);
+  expect(await cursorOf(page, "body")).toBe("auto");
+  expect(errors.filter((text) => text.includes("CursorRing"))).toHaveLength(1);
+  // It stays off for the rest of the visit.
+  await page.mouse.move(500, 200);
+  await page.mouse.move(520, 220);
+  await page.waitForTimeout(300);
+  expect(await hasClass(page)).toBe(false);
 });
