@@ -277,7 +277,9 @@ test.describe("with forced colors or print", () => {
     await expect(ring(page)).toBeVisible();
 
     await page.emulateMedia({ forcedColors: "active" });
-    await expect(ring(page)).toHaveCSS("display", "none");
+    // Gone: the component unmounts the ring in forced colors (so it can never hide the native
+    // cursor there), and until React has done that the CSS already has it at display: none.
+    await expect(ring(page)).toBeHidden();
     expect(await hasClass(page)).toBe(false);
     await page.emulateMedia({ forcedColors: "none" });
     await expect(ring(page)).toBeVisible();
