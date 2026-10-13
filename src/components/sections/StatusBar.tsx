@@ -4,6 +4,7 @@ import { MobileMenu } from "@/components/interactive/MobileMenu";
 import { NowPlaying } from "@/components/interactive/NowPlaying";
 import { ThemeToggle } from "@/components/interactive/ThemeToggle";
 import { BarPill } from "@/components/primitives/BarPill";
+import { RollText } from "@/components/primitives/RollText";
 import { Brand } from "./Brand";
 
 export function StatusBar() {
@@ -16,9 +17,9 @@ export function StatusBar() {
             <li key={item.label}>
               <Link
                 href={item.href}
-                className="inline-flex min-h-11 items-center rounded-full px-3 text-[.9rem] text-muted transition-colors hover:bg-bg-2 hover:text-ink"
+                className="roll-host inline-flex min-h-11 items-center rounded-full px-3 text-[.9rem] text-muted transition-colors hover:bg-bg-2 hover:text-ink"
               >
-                {item.label}
+                <RollText>{item.label}</RollText>
               </Link>
             </li>
           ))}

@@ -103,13 +103,13 @@ export function MobileMenu({
             </ul>
           </nav>
           <div className="flex flex-wrap items-center gap-3">
-            <Button variant="primary" href={`mailto:${email}`}>
+            <Button variant="primary" href={`mailto:${email}`} roll={false}>
               Email me
             </Button>
-            <Button href={github} external>
+            <Button href={github} external roll={false}>
               GitHub ↗
             </Button>
-            <Button href={linkedin} external>
+            <Button href={linkedin} external roll={false}>
               LinkedIn ↗
             </Button>
             <ThemeToggle />

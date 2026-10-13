@@ -348,6 +348,49 @@
     }
   }
 
+  /* Rolling-text links (see RollText.tsx). On hover or keyboard focus the label slides up and out
+     and an identical copy slides in from below: 200 ms, --ease-soft, and it reverses smoothly.
+     Everything is inside one gate. With a touch screen, reduced motion, forced colors, no
+     JavaScript (the data-js mark from the inline script in <head>), or a browser without alt text
+     on generated content, none of this exists: the two spans are unstyled, there is no copy, and
+     the link keeps exactly its normal hover style.
+     The clip box is the .roll span INSIDE the link, never the link, so the focus ring (drawn on the
+     link itself) is not clipped. The box has 0.25em of padding above and below, so descenders and
+     accents fit, and the same amount of negative margin, so it takes no layout space. The slide
+     distance is the box height (the label's own height plus 0.5em), so the label is fully out of
+     the box when it has rolled and the copy lands where the label was. */
+  @supports (content: "a" / "b") {
+    @media (hover: hover) and (prefers-reduced-motion: no-preference) and (not (forced-colors: active)) {
+      :root[data-js] .roll {
+        position: relative;
+        display: inline-block;
+        overflow: hidden;
+        padding-block: 0.25em;
+        margin-block: -0.25em;
+      }
+      :root[data-js] .roll-text {
+        display: block;
+        transition: transform 200ms var(--ease-soft);
+      }
+      :root[data-js] .roll::after {
+        content: attr(data-label) / "";
+        position: absolute;
+        top: calc(100% + 0.25em);
+        right: 0;
+        left: 0;
+        transition: transform 200ms var(--ease-soft);
+      }
+      :root[data-js]
+        .roll-host:not(:disabled):is(:hover, :focus-visible)
+        .roll-text,
+      :root[data-js]
+        .roll-host:not(:disabled):is(:hover, :focus-visible)
+        .roll::after {
+        transform: translateY(calc(-100% - 0.5em));
+      }
+    }
+  }
+
   .eq-bar {
     width: 2px;
     background: var(--accent-text);

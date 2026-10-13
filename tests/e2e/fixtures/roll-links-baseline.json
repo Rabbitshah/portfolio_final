@@ -1,0 +1,821 @@
+{
+  "320x640": {
+    "nav": [],
+    "hero": [
+      {
+        "label": "See projects",
+        "width": 280,
+        "height": 48
+      },
+      {
+        "label": "Résumé",
+        "width": 134,
+        "height": 48
+      },
+      {
+        "label": "Email me",
+        "width": 134,
+        "height": 48
+      }
+    ],
+    "contact": [
+      {
+        "label": "Send message",
+        "width": 166.53,
+        "height": 48
+      },
+      {
+        "label": "maanavshah09@gmail.com",
+        "width": 280,
+        "height": 48
+      },
+      {
+        "label": "Copy email",
+        "width": 134,
+        "height": 48
+      },
+      {
+        "label": "GitHub ↗",
+        "width": 134,
+        "height": 48
+      },
+      {
+        "label": "LinkedIn ↗",
+        "width": 280,
+        "height": 48
+      }
+    ]
+  },
+  "360x740": {
+    "nav": [],
+    "hero": [
+      {
+        "label": "See projects",
+        "width": 320,
+        "height": 48
+      },
+      {
+        "label": "Résumé",
+        "width": 154,
+        "height": 48
+      },
+      {
+        "label": "Email me",
+        "width": 154,
+        "height": 48
+      }
+    ],
+    "contact": [
+      {
+        "label": "Send message",
+        "width": 166.53,
+        "height": 48
+      },
+      {
+        "label": "maanavshah09@gmail.com",
+        "width": 320,
+        "height": 48
+      },
+      {
+        "label": "Copy email",
+        "width": 154,
+        "height": 48
+      },
+      {
+        "label": "GitHub ↗",
+        "width": 154,
+        "height": 48
+      },
+      {
+        "label": "LinkedIn ↗",
+        "width": 320,
+        "height": 48
+      }
+    ]
+  },
+  "390x844": {
+    "nav": [],
+    "hero": [
+      {
+        "label": "See projects",
+        "width": 350,
+        "height": 48
+      },
+      {
+        "label": "Résumé",
+        "width": 169,
+        "height": 48
+      },
+      {
+        "label": "Email me",
+        "width": 169,
+        "height": 48
+      }
+    ],
+    "contact": [
+      {
+        "label": "Send message",
+        "width": 178.53,
+        "height": 48
+      },
+      {
+        "label": "maanavshah09@gmail.com",
+        "width": 350,
+        "height": 48
+      },
+      {
+        "label": "Copy email",
+        "width": 169,
+        "height": 48
+      },
+      {
+        "label": "GitHub ↗",
+        "width": 169,
+        "height": 48
+      },
+      {
+        "label": "LinkedIn ↗",
+        "width": 350,
+        "height": 48
+      }
+    ]
+  },
+  "430x932": {
+    "nav": [],
+    "hero": [
+      {
+        "label": "See projects",
+        "width": 390,
+        "height": 48
+      },
+      {
+        "label": "Résumé",
+        "width": 189,
+        "height": 48
+      },
+      {
+        "label": "Email me",
+        "width": 189,
+        "height": 48
+      }
+    ],
+    "contact": [
+      {
+        "label": "Send message",
+        "width": 178.53,
+        "height": 48
+      },
+      {
+        "label": "maanavshah09@gmail.com",
+        "width": 390,
+        "height": 48
+      },
+      {
+        "label": "Copy email",
+        "width": 189,
+        "height": 48
+      },
+      {
+        "label": "GitHub ↗",
+        "width": 189,
+        "height": 48
+      },
+      {
+        "label": "LinkedIn ↗",
+        "width": 390,
+        "height": 48
+      }
+    ]
+  },
+  "600x900": {
+    "nav": [],
+    "hero": [
+      {
+        "label": "See projects",
+        "width": 165.08,
+        "height": 48
+      },
+      {
+        "label": "Résumé",
+        "width": 106.31,
+        "height": 48
+      },
+      {
+        "label": "Email me",
+        "width": 115.48,
+        "height": 48
+      }
+    ],
+    "contact": [
+      {
+        "label": "Send message",
+        "width": 178.53,
+        "height": 48
+      },
+      {
+        "label": "maanavshah09@gmail.com",
+        "width": 271.05,
+        "height": 48
+      },
+      {
+        "label": "Copy email",
+        "width": 131.02,
+        "height": 48
+      },
+      {
+        "label": "GitHub ↗",
+        "width": 116.05,
+        "height": 48
+      },
+      {
+        "label": "LinkedIn ↗",
+        "width": 125.47,
+        "height": 48
+      }
+    ]
+  },
+  "768x1024": {
+    "nav": [
+      {
+        "label": "About",
+        "width": 62.8,
+        "height": 44
+      },
+      {
+        "label": "Work",
+        "width": 58.91,
+        "height": 44
+      },
+      {
+        "label": "Research",
+        "width": 83.2,
+        "height": 44
+      },
+      {
+        "label": "Log",
+        "width": 46.7,
+        "height": 44
+      },
+      {
+        "label": "Contact",
+        "width": 75.53,
+        "height": 44
+      }
+    ],
+    "hero": [
+      {
+        "label": "See projects",
+        "width": 165.08,
+        "height": 48
+      },
+      {
+        "label": "Résumé",
+        "width": 106.31,
+        "height": 48
+      },
+      {
+        "label": "Email me",
+        "width": 115.48,
+        "height": 48
+      }
+    ],
+    "contact": [
+      {
+        "label": "Send message",
+        "width": 178.53,
+        "height": 48
+      },
+      {
+        "label": "maanavshah09@gmail.com",
+        "width": 271.05,
+        "height": 48
+      },
+      {
+        "label": "Copy email",
+        "width": 131.02,
+        "height": 48
+      },
+      {
+        "label": "GitHub ↗",
+        "width": 116.05,
+        "height": 48
+      },
+      {
+        "label": "LinkedIn ↗",
+        "width": 125.47,
+        "height": 48
+      }
+    ]
+  },
+  "844x390": {
+    "nav": [
+      {
+        "label": "About",
+        "width": 62.8,
+        "height": 44
+      },
+      {
+        "label": "Work",
+        "width": 58.91,
+        "height": 44
+      },
+      {
+        "label": "Research",
+        "width": 83.2,
+        "height": 44
+      },
+      {
+        "label": "Log",
+        "width": 46.7,
+        "height": 44
+      },
+      {
+        "label": "Contact",
+        "width": 75.53,
+        "height": 44
+      }
+    ],
+    "hero": [
+      {
+        "label": "See projects",
+        "width": 165.08,
+        "height": 48
+      },
+      {
+        "label": "Résumé",
+        "width": 106.31,
+        "height": 48
+      },
+      {
+        "label": "Email me",
+        "width": 115.48,
+        "height": 48
+      }
+    ],
+    "contact": [
+      {
+        "label": "Send message",
+        "width": 178.53,
+        "height": 48
+      },
+      {
+        "label": "maanavshah09@gmail.com",
+        "width": 271.05,
+        "height": 48
+      },
+      {
+        "label": "Copy email",
+        "width": 131.02,
+        "height": 48
+      },
+      {
+        "label": "GitHub ↗",
+        "width": 116.05,
+        "height": 48
+      },
+      {
+        "label": "LinkedIn ↗",
+        "width": 125.47,
+        "height": 48
+      }
+    ]
+  },
+  "1024x768": {
+    "nav": [
+      {
+        "label": "About",
+        "width": 62.8,
+        "height": 44
+      },
+      {
+        "label": "Work",
+        "width": 58.91,
+        "height": 44
+      },
+      {
+        "label": "Research",
+        "width": 83.2,
+        "height": 44
+      },
+      {
+        "label": "Log",
+        "width": 46.7,
+        "height": 44
+      },
+      {
+        "label": "Contact",
+        "width": 75.53,
+        "height": 44
+      }
+    ],
+    "hero": [
+      {
+        "label": "See projects",
+        "width": 165.08,
+        "height": 48
+      },
+      {
+        "label": "Résumé",
+        "width": 106.31,
+        "height": 48
+      },
+      {
+        "label": "Email me",
+        "width": 115.48,
+        "height": 48
+      }
+    ],
+    "contact": [
+      {
+        "label": "Send message",
+        "width": 178.53,
+        "height": 48
+      },
+      {
+        "label": "maanavshah09@gmail.com",
+        "width": 271.05,
+        "height": 48
+      },
+      {
+        "label": "Copy email",
+        "width": 131.02,
+        "height": 48
+      },
+      {
+        "label": "GitHub ↗",
+        "width": 116.05,
+        "height": 48
+      },
+      {
+        "label": "LinkedIn ↗",
+        "width": 125.47,
+        "height": 48
+      }
+    ]
+  },
+  "1180x820": {
+    "nav": [
+      {
+        "label": "About",
+        "width": 62.8,
+        "height": 44
+      },
+      {
+        "label": "Work",
+        "width": 58.91,
+        "height": 44
+      },
+      {
+        "label": "Research",
+        "width": 83.2,
+        "height": 44
+      },
+      {
+        "label": "Log",
+        "width": 46.7,
+        "height": 44
+      },
+      {
+        "label": "Contact",
+        "width": 75.53,
+        "height": 44
+      }
+    ],
+    "hero": [
+      {
+        "label": "See projects",
+        "width": 165.08,
+        "height": 48
+      },
+      {
+        "label": "Résumé",
+        "width": 106.31,
+        "height": 48
+      },
+      {
+        "label": "Email me",
+        "width": 115.48,
+        "height": 48
+      }
+    ],
+    "contact": [
+      {
+        "label": "Send message",
+        "width": 178.53,
+        "height": 48
+      },
+      {
+        "label": "maanavshah09@gmail.com",
+        "width": 271.05,
+        "height": 48
+      },
+      {
+        "label": "Copy email",
+        "width": 131.02,
+        "height": 48
+      },
+      {
+        "label": "GitHub ↗",
+        "width": 116.05,
+        "height": 48
+      },
+      {
+        "label": "LinkedIn ↗",
+        "width": 125.47,
+        "height": 48
+      }
+    ]
+  },
+  "1280x720": {
+    "nav": [
+      {
+        "label": "About",
+        "width": 62.8,
+        "height": 44
+      },
+      {
+        "label": "Work",
+        "width": 58.91,
+        "height": 44
+      },
+      {
+        "label": "Research",
+        "width": 83.2,
+        "height": 44
+      },
+      {
+        "label": "Log",
+        "width": 46.7,
+        "height": 44
+      },
+      {
+        "label": "Contact",
+        "width": 75.53,
+        "height": 44
+      }
+    ],
+    "hero": [
+      {
+        "label": "See projects",
+        "width": 165.08,
+        "height": 48
+      },
+      {
+        "label": "Résumé",
+        "width": 106.31,
+        "height": 48
+      },
+      {
+        "label": "Email me",
+        "width": 115.48,
+        "height": 48
+      }
+    ],
+    "contact": [
+      {
+        "label": "Send message",
+        "width": 178.53,
+        "height": 48
+      },
+      {
+        "label": "maanavshah09@gmail.com",
+        "width": 271.05,
+        "height": 48
+      },
+      {
+        "label": "Copy email",
+        "width": 131.02,
+        "height": 48
+      },
+      {
+        "label": "GitHub ↗",
+        "width": 116.05,
+        "height": 48
+      },
+      {
+        "label": "LinkedIn ↗",
+        "width": 125.47,
+        "height": 48
+      }
+    ]
+  },
+  "1440x900": {
+    "nav": [
+      {
+        "label": "About",
+        "width": 62.8,
+        "height": 44
+      },
+      {
+        "label": "Work",
+        "width": 58.91,
+        "height": 44
+      },
+      {
+        "label": "Research",
+        "width": 83.2,
+        "height": 44
+      },
+      {
+        "label": "Log",
+        "width": 46.7,
+        "height": 44
+      },
+      {
+        "label": "Contact",
+        "width": 75.53,
+        "height": 44
+      }
+    ],
+    "hero": [
+      {
+        "label": "See projects",
+        "width": 165.08,
+        "height": 48
+      },
+      {
+        "label": "Résumé",
+        "width": 106.31,
+        "height": 48
+      },
+      {
+        "label": "Email me",
+        "width": 115.48,
+        "height": 48
+      }
+    ],
+    "contact": [
+      {
+        "label": "Send message",
+        "width": 178.53,
+        "height": 48
+      },
+      {
+        "label": "maanavshah09@gmail.com",
+        "width": 271.05,
+        "height": 48
+      },
+      {
+        "label": "Copy email",
+        "width": 131.02,
+        "height": 48
+      },
+      {
+        "label": "GitHub ↗",
+        "width": 116.05,
+        "height": 48
+      },
+      {
+        "label": "LinkedIn ↗",
+        "width": 125.47,
+        "height": 48
+      }
+    ]
+  },
+  "1920x1080": {
+    "nav": [
+      {
+        "label": "About",
+        "width": 71.56,
+        "height": 50.16
+      },
+      {
+        "label": "Work",
+        "width": 67.11,
+        "height": 50.16
+      },
+      {
+        "label": "Research",
+        "width": 94.81,
+        "height": 50.16
+      },
+      {
+        "label": "Log",
+        "width": 53.22,
+        "height": 50.16
+      },
+      {
+        "label": "Contact",
+        "width": 86.06,
+        "height": 50.16
+      }
+    ],
+    "hero": [
+      {
+        "label": "See projects",
+        "width": 187.89,
+        "height": 54.72
+      },
+      {
+        "label": "Résumé",
+        "width": 120.91,
+        "height": 54.72
+      },
+      {
+        "label": "Email me",
+        "width": 131.36,
+        "height": 54.72
+      }
+    ],
+    "contact": [
+      {
+        "label": "Send message",
+        "width": 203.23,
+        "height": 54.72
+      },
+      {
+        "label": "maanavshah09@gmail.com",
+        "width": 308.69,
+        "height": 54.72
+      },
+      {
+        "label": "Copy email",
+        "width": 149.06,
+        "height": 54.72
+      },
+      {
+        "label": "GitHub ↗",
+        "width": 132.02,
+        "height": 54.72
+      },
+      {
+        "label": "LinkedIn ↗",
+        "width": 142.75,
+        "height": 54.72
+      }
+    ]
+  },
+  "2560x1440": {
+    "nav": [
+      {
+        "label": "About",
+        "width": 89.14,
+        "height": 62.47
+      },
+      {
+        "label": "Work",
+        "width": 83.59,
+        "height": 62.47
+      },
+      {
+        "label": "Research",
+        "width": 118.09,
+        "height": 62.47
+      },
+      {
+        "label": "Log",
+        "width": 66.28,
+        "height": 62.47
+      },
+      {
+        "label": "Contact",
+        "width": 107.2,
+        "height": 62.47
+      }
+    ],
+    "hero": [
+      {
+        "label": "See projects",
+        "width": 233.55,
+        "height": 68.16
+      },
+      {
+        "label": "Résumé",
+        "width": 150.11,
+        "height": 68.16
+      },
+      {
+        "label": "Email me",
+        "width": 163.14,
+        "height": 68.16
+      }
+    ],
+    "contact": [
+      {
+        "label": "Send message",
+        "width": 252.66,
+        "height": 68.16
+      },
+      {
+        "label": "maanavshah09@gmail.com",
+        "width": 384.02,
+        "height": 68.16
+      },
+      {
+        "label": "Copy email",
+        "width": 185.19,
+        "height": 68.16
+      },
+      {
+        "label": "GitHub ↗",
+        "width": 163.95,
+        "height": 68.16
+      },
+      {
+        "label": "LinkedIn ↗",
+        "width": 177.33,
+        "height": 68.16
+      }
+    ]
+  }
+}

@@ -1,10 +1,13 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { cx } from "@/lib/cx";
+import { RollText } from "./RollText";
 
 type ButtonProps = {
   variant?: "primary" | "ghost";
   arrow?: boolean;
+  /** Roll the label on hover and focus (text labels only). Off for the touch-only mobile menu. */
+  roll?: boolean;
   className?: string;
   children: ReactNode;
 } & (
@@ -44,11 +47,23 @@ function Arrow() {
 }
 
 export function Button(props: ButtonProps) {
-  const { variant = "ghost", arrow = false, className, children } = props;
-  const classes = cx(base, variants[variant], className);
+  const {
+    variant = "ghost",
+    arrow = false,
+    roll = true,
+    className,
+    children,
+  } = props;
+  const rolling = roll && typeof children === "string";
+  const classes = cx(
+    base,
+    variants[variant],
+    rolling && "roll-host",
+    className,
+  );
   const content = (
     <>
-      {children}
+      {rolling ? <RollText>{children}</RollText> : children}
       {arrow && <Arrow />}
     </>
   );
