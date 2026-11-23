@@ -320,8 +320,10 @@
   .cursor-ring[data-labelled] .cursor-ring-label {
     opacity: 1;
   }
-  /* The dot is the pointer: 6 px, always at the exact pointer position, and it does not grow over
-     links (only the ring does). Same centring and stacking as the ring, and above it. */
+  /* The dot is the pointer: 6 px (always, it never grows), at the exact pointer position. Same
+     centring and stacking as the ring, and above it. Over links and buttons it fades out in 120 ms:
+     the ring grows to 44 px there and may carry a word, and the dot would sit on top of it. It
+     comes back in the default state. */
   .cursor-dot {
     position: fixed;
     top: 0;
@@ -337,9 +339,12 @@
     transform: translate(-50%, -50%);
     transition: opacity 0.2s ease;
   }
-  .cursor-dot[data-state="default"],
-  .cursor-dot[data-state="interactive"] {
+  .cursor-dot[data-state="default"] {
     opacity: 1;
+  }
+  .cursor-dot[data-state="interactive"] {
+    opacity: 0;
+    transition-duration: 0.12s;
   }
   @media (prefers-reduced-motion: reduce), (forced-colors: active), print {
     .cursor-ring,
